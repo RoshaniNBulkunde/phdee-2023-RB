@@ -8,7 +8,7 @@
 * Set up your working directories
 
 	* local datapath = "C:\Users\dbrewer30\Dropbox\teaching\Courses\BrewerPhDEnv\Homeworks\phdee-2023-DB\sample_code\output" // Typically, where you keep the data and where you want the outputs to go will be different.  In this sample code, this is not the case so I don't specify a data path.
-	local outputpath = "C:\Users\rbulkunde3\OneDrive - Georgia Institute of Technology\Georgia Instituteof Technology\Spring 2023\EnvironmentalEconomics 2\homework 1\output"
+	local outputpath = "C:\Users\rosha\Dropbox (GaTech)\PhD-2023-Env2\phdee-2023-RB\homework1\output"
 	
 	cd "`outputpath'"
 	
@@ -19,7 +19,7 @@
 	
 * ON IAC VLAB server, you will need to ucomment this line and run this:
 
-sysdir set PERSONAL \\iac.nas.gatech.edu\dbrewer30
+*sysdir set PERSONAL \\iac.nas.gatech.edu\dbrewer30
 
 * Generate some random data
 
