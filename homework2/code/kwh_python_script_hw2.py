@@ -20,7 +20,24 @@ import statsmodels.api as sm
 
 # Set working directories and seed
 
-# The "outputpath" is where I will export my outputs
+## The "outputpath" is where I will export my outputs
 outputpath = r'C:\Users\rosha\Dropbox (GaTech)\PhD-2023-Env2\phdee-2023-RB\homework2\output'
 
-#Import kwh.csv data
+#Create a table that displays each variable’s sample mean, sample standard deviation, and p-values for the two-way t-test between
+#treatment and control group means
+
+## Import kwh.csv data
+kwhData = pd.read_csv('C:\\Users\\rosha\\Dropbox (GaTech)\\PhD-2023-Env2\\phdee-2023-RB\\homework2\\kwh.csv')
+
+## Just to view summary statistics
+print(kwhData.describe())
+
+## Generate means
+means = kwhData.groupby('retrofit').mean()
+
+## Generate standard deviations
+stdev = kwhData.groupby('retrofit').std()
+
+## Get number of observations
+nobs2 = kwhData.groupby('retrofit').count()
+
