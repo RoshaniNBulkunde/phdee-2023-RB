@@ -34,7 +34,7 @@ test. Hint: https://www.statalist.org/forums/forum/general-stata-discussion/gene
 eststo control: quietly estpost summarize electricity sqft temp if retrofit == 0
 eststo treatment: quietly estpost summarize electricity sqft temp if retrofit == 1
 eststo diff: quietly estpost ttest electricity sqft temp, by(retrofit) unequal
-esttab control treatment diff using summaryStata.tex , cells("mean(pattern(1 1 0) fmt(3)) sd(pattern(1 1 0)) b(star pattern(0 0 1) fmt(3)) t(pattern(0 0 1) par fmt(3))") label
+esttab control treatment diff using summaryStata.tex , replace cells("mean(pattern(1 1 0) fmt(3)) sd(pattern(1 1 0)) b(star pattern(0 0 1) fmt(3)) t(pattern(0 0 1) par fmt(3))") label
 
 ** Question 2
 /*2. Create a two-way scatterplot with electricity consumption on the y-axis and square feet on the x-axis
