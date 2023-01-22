@@ -18,58 +18,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-
-# Set working directories and seed
-
-## The "outputpath" is where I will export my outputs
-outputpath = r'C:\Users\rosha\Dropbox (GaTech)\PhD-2023-Env2\phdee-2023-RB\homework2\output'
-
-#Create a table that displays each variable’s sample mean, sample standard deviation, and p-values for the two-way t-test between
-#treatment and control group means
-
-## Import kwh.csv data
-kwhData = pd.read_csv('C:\\Users\\rosha\\Dropbox (GaTech)\\PhD-2023-Env2\\phdee-2023-RB\\homework2\\kwh.csv')
-
-## Just to view summary statistics
-print(kwhData.describe())
-#print(kwhData.groupby('retrofit').mean()
-## Generate means
-means = kwhData.mean()
-
-## Generate standard deviations
-stdev = kwhData.std()
-
-## Get number of observations
-nobs2 = kwhData.count().min()
-
-## Set the row and column names
-rownames = pd.concat([pd.Series(['Electricity','Home', 'Temperature', 'Observations']),pd.Series([' ', ' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for stdevs
-colnames = [('Mean','(s.d.)')] # Two rows of column names
-
-## Format means and std devs to display to two decimal places
-#means = means.map('{:.2f}'.format)
-#stdev = stdev.map('({:.2f})'.format)
-
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jan 21 10:26:00 2023
-
-@author: roshani bulkunde
-"""
-
-# Clear all
-
-from IPython import get_ipython
-get_ipython().magic('reset -sf')
-
-# Import packages - you may need to type "conda install numpy" the first time you use a package, for example.
-
-import os
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import statsmodels.api as sm
 from scipy.stats import ttest_ind, ttest_ind_from_stats
 
 # Set working directories and seed
@@ -86,78 +34,110 @@ kwhData = pd.read_csv('C:\\Users\\rosha\\Dropbox (GaTech)\\PhD-2023-Env2\\phdee-
 ## Just to view summary statistics
 print(kwhData.describe())
 
-# I need to created the separate columns with variable names with sample mean and standard deviation for control group 
+# Summary for Control group
+
 ## Generate means for control group
-meansControl = kwhData[kwhData["retrofit"]==0].mean()
+meanControlEle = kwhData[kwhData["retrofit"]==0]["electricity"].mean()
+meanControlSqft = kwhData[kwhData["retrofit"]==0]["sqft"].mean()
+meanControlTemp = kwhData[kwhData["retrofit"]==0]["temp"].mean()
 
-## Generate standard deviations for control group
-stdevControl = kwhData[kwhData["retrofit"]==0].std()
-
-## Get number of observations for control group
-nobs2Control = kwhData[kwhData["retrofit"]==0].count().min()
-
-# I need to created the separate columns with variable names with sample mean and standard deviation for treatment group 
-## Generate means for treatment group
-meansTreatment = kwhData[kwhData["retrofit"]==1].mean()
-
-## Generate standard deviations for treatment group
-stdevTreatment = kwhData[kwhData["retrofit"]==1].std()
-
-## Get number of observations for treatment group
-nobs2Treatment = kwhData[kwhData["retrofit"]==1].count().min()
+meansControl= pd.Series([meanControlEle, meanControlSqft, meanControlTemp]) ##Create a series for means of variable for control group
 
 
+## Generate standard deviation for control group
+stdControlEle = kwhData[kwhData["retrofit"]==0]["electricity"].std()
+stdControlSqft = kwhData[kwhData["retrofit"]==0]["sqft"].std()
+stdControlTemp = kwhData[kwhData["retrofit"]==0]["temp"].std()
+
+stdvControl= pd.Series([stdControlEle, stdControlSqft, stdControlTemp]) ##Create a series for standard deviation of variable for control group
+
+## Generate number of observation for control group
+obControl = kwhData[kwhData["retrofit"]==0].count().min()
+
+
+# Summary for Treatment group
+
+## Generate means for control group
+meanTreatEle = kwhData[kwhData["retrofit"]==1]["electricity"].mean()
+meanTreatSqft = kwhData[kwhData["retrofit"]==1]["sqft"].mean()
+meanTreatTemp = kwhData[kwhData["retrofit"]==1]["temp"].mean()
+
+meansTreat = pd.Series([meanTreatEle, meanTreatSqft, meanTreatTemp]) ##Create a series for means of variable for treatment group
+
+
+## Generate standard deviation for control group
+stdTreatEle = kwhData[kwhData["retrofit"]==1]["electricity"].std()
+stdTreatSqft = kwhData[kwhData["retrofit"]==1]["sqft"].std()
+stdTreatTemp = kwhData[kwhData["retrofit"]==1]["temp"].std()
+
+stdvTreat= pd.Series([stdTreatEle, stdTreatSqft, stdTreatTemp]) ##Create a series for standard deviation of variable for treatment group
+
+## Generate number of observation for control group
+obTreat = kwhData[kwhData["retrofit"]==1].count().min()
+
+# T Test
+
+#Create Control and Treatment datasets
 control = kwhData[kwhData['retrofit']==0]
 treat = kwhData[kwhData['retrofit']==1]
+
+#Perform ttest
 electricity_test = ttest_ind(treat['electricity'], control['electricity'])
-electricity_test = e_t_test = pd.DataFrame(electricity_test)
+electricity_test =pd.DataFrame(electricity_test)
 
-sq_control = kwhData[kwhData['retrofit']==0]
-sq_treat = kwhData[kwhData['retrofit']==1]
-sq_ttest = ttest_ind(sq_treat['sqft'], sq_control['sqft'])
-sq_ttest = pd.DataFrame(sq_ttest)
+sqft_test = ttest_ind(treat['sqft'], control['sqft'])
+sqft_test = pd.DataFrame(sqft_test)
 
-retrofit_ttest = ttest_ind(sq_treat['retrofit'], sq_control['retrofit'])
-retrofit_ttest = pd.DataFrame(retrofit_ttest)
+temp_test = ttest_ind(treat['temp'], control['temp'])
+temp_test = pd.DataFrame(temp_test)
 
-temp_ttest = ttest_ind(sq_treat['temp'], sq_control['temp'])
-temp_ttest = pd.DataFrame(temp_ttest)
-
+obs = kwhData.count().min()
 
 ## Set the row and column names
-rownames = pd.concat([pd.Series(['Electricity','Home', 'Retrofit', 'Temperature', 'Observations']),pd.Series([' ',' ', ' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for stdevs
+rownames = pd.concat([pd.Series(['Electricity (kWh)','Home (sqft)','Temperature', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for stdevs
 colnames = [('Mean','(s.d.)')] # Two rows of column names
+coldiff = [('Diff','(p value)')]
+
+## Format means and std devs to display to two decimal places
+meansControl = meansControl.map('{:.2f}'.format)
+stdvControl = stdvControl.map('({:.2f})'.format)
+meansTreat = meansTreat.map('{:.2f}'.format)
+stdvTreat = stdvTreat.map('({:.2f})'.format)
 
 ## Align std deviations under means and add observations
-col0 = pd.concat([meansControl,stdevControl,pd.Series(nobs2Control)],axis = 1).stack()
-col1 = pd.concat([meansTreatment,stdevTreatment,pd.Series(nobs2Treatment)],axis = 1).stack()
-col2 = pd.concat([electricity_test, sq_ttest, retrofit_ttest, temp_ttest, pd.Series(nobs2Control)], axis = 0)
+col0 = pd.concat([meansControl, stdvControl],axis = 1).stack()
+col0 = pd.concat([col0, pd.Series(obControl)], axis=0)
+
+col1 = pd.concat([meansTreat, stdvTreat],axis = 1).stack()
+col1 = pd.concat([col1, pd.Series(obTreat)], axis=0)
+#col1 = pd.concat([meansTreat, stdvTreat, pd.Series(obTreat)],axis = 1).stack()
+
+col2 = pd.concat([electricity_test, sqft_test, temp_test, pd.Series(obs)],axis = 0)
+
+
 
 ## Add column and row labels.  Convert to dataframe (helps when you export it)
 col0 = pd.DataFrame(col0)
 col0.index = rownames
 col0.columns = pd.MultiIndex.from_tuples(colnames)
 
-
 col1 = pd.DataFrame(col1)
 col1.index = rownames
 col1.columns = pd.MultiIndex.from_tuples(colnames)
 
-
 col2 = pd.DataFrame(col2)
 col2.index = rownames
-col2.columns = pd.MultiIndex.from_tuples(colnames)
+col2.columns = pd.MultiIndex.from_tuples(coldiff)
 
-
-merged_col = pd.concat([col0, col1, col2], axis = 1)
+summary = pd.concat([col0, col1, col2], axis = 1)
 
 ## Output to LaTeX folder
 os.chdir(outputpath) # Output directly to LaTeX folder
 
-merged_col.to_latex('samplemeantable.tex') # Note you would have to stitch together multiple series into a dataframe to have multiple columns
+col0.to_latex('pythonsummary.tex')
 
 
-# Plot a histogram of the outcome variable -----------------------------------
+
 ##Converting to wide data frame
 kwhdata_wide = kwhData.pivot(columns='retrofit', values='electricity')
 
