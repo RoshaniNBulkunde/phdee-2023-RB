@@ -17,6 +17,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
 # Set working directories and seed
 
@@ -155,3 +156,13 @@ os.chdir(outputpath) # Output directly to LaTeX folder
 
 merged_col.to_latex('samplemeantable.tex') # Note you would have to stitch together multiple series into a dataframe to have multiple columns
 
+
+# Plot a histogram of the outcome variable -----------------------------------
+##Converting to wide data frame
+kwhdata_wide = kwhData.pivot(columns='retrofit', values='electricity')
+
+## Plot kernel density
+kwhdata_wide.plot.density(figsize = (7, 7), linewidth = 4) 
+plt.xlabel("Electricity Distribution (kWh)")
+plt.savefig('python_kwh_hist.pdf',format='pdf') # I suggest saving to .pdf for highest quality
+plt.show()
