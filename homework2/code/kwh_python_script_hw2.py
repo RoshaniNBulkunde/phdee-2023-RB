@@ -134,7 +134,7 @@ summary = pd.concat([col0, col1, col2], axis = 1)
 ## Output to LaTeX folder
 os.chdir(outputpath) # Output directly to LaTeX folder
 
-col0.to_latex('pythonsummary.tex')
+summary.to_latex('pythonsummary.tex')
 
 
 
