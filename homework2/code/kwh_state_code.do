@@ -46,3 +46,10 @@ graph export Stata_twowayscatter.pdf, replace
 /*Estimate the same regression as in #3 above using Stata's regress command, estimating heteroskedasticityrobust
 standard errors. Report the results in a new LaTeX table (including standard errors) using
 Stata's outreg2 command. */
+reg electricity retrofit sqft temp, vce(robust)
+outreg2 using stata_regress.tex, label 2aster tex(frag) dec(2) replace ctitle("Ordinary least squares")
+
+
+
+
+
