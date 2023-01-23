@@ -146,3 +146,75 @@ kwhdata_wide.plot.density(figsize = (7, 7), linewidth = 4)
 plt.xlabel("Electricity Distribution (kWh)")
 plt.savefig('python_kwh_hist.pdf',format='pdf') # I suggest saving to .pdf for highest quality
 plt.show()
+
+# Question 3
+##Q 3A
+
+kwhData['ones']=1 #Create a column of ones
+
+##Rearrange the order of the variables
+kwhdata1 = kwhData[['electricity', 'ones', 'sqft', 'retrofit', 'temp']]
+
+#Create an X matrix (array) that contains covariates
+X = kwhdata1[kwhdata1.columns[1:5]].to_numpy()
+np.shape(X) #1000 rows and 4 columns
+X_matrix = np.matrix(X) #convert array into matrix
+
+#Create an Y matrix (array) as a vector
+Y = kwhdata1[kwhdata1.columns[0]].to_numpy()
+np.shape(Y) #Dimension of Y matrix is 1000*1
+Y_matrix = np.matrix(Y)
+Y_matrix = np.transpose(Y_matrix) #because we need 1000*1
+
+## Now we need to do matrix multiplication
+X_tran= np.transpose(X)
+
+XX = X_tran*X_matrix  ## Xtranspose mupliply by X
+XY =X_tran*Y_matrix   ## X transpose multiply by Y matrix
+
+XX_inverse = np.linalg.inv(XX) ##Inverse of XX matrix 
+
+#Beta gives the beta coefficient estimates
+beta= XX_inverse * XY 
+
+#
+beta.to_latex ('beta.tex')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#XX_trans = np.transpose(XX)
+#X_tran= np.transpose(X)
+#XY = np.multiply(Y, X_tran)
+#XY_trans = np.transpose(XY)
+
+
+#array_ones= np.ones(1000) 
+#X_matrix =np.matrix(X)
+#X_tran= np.transpose(X)
+
+
+#y=np.array(kwhData)
+# 
