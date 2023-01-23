@@ -176,9 +176,18 @@ XX_inverse = np.linalg.inv(XX) ##Inverse of XX matrix
 
 #Beta gives the beta coefficient estimates
 beta= XX_inverse * XY 
+##This beta gives me the exact coeffient as STATA regress command
 
-#
-beta.to_latex ('beta.tex')
+## Question 3B
+
+
+
+## Question 3C
+OLS_canned_routine = sm.OLS(Y, X).fit()  ##Y and X already defined in question 3A. Hence, Iam just using the model.
+
+print(OLS_canned_routine.summary())
+
+
 
 
 
