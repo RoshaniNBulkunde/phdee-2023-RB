@@ -182,6 +182,7 @@ beta= XX_inverse * XY
 
 
 
+
 ## Question 3C
 OLS_canned_routine = sm.OLS(Y, X).fit()  ##Y and X already defined in question 3A. Hence, Iam just using the model.
 
