@@ -19,7 +19,7 @@ import seaborn as sns
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from scipy.stats import ttest_ind, ttest_ind_from_stats
-
+from scipy.optimize import minimize
 # Set working directories and seed
 
 ## The "outputpath" is where I will export my outputs
@@ -178,15 +178,52 @@ XX_inverse = np.linalg.inv(XX) ##Inverse of XX matrix
 beta= XX_inverse * XY 
 ##This beta gives me the exact coeffient as STATA regress command
 
-## Question 3B
-
-
-
-
+##-----------------------------------------------------------------------------------##
 ## Question 3C
 OLS_canned_routine = sm.OLS(Y, X).fit()  ##Y and X already defined in question 3A. Hence, Iam just using the model.
 
 print(OLS_canned_routine.summary())
+
+##------------------------------------------------------------------------------------##
+
+
+## Question 3B
+## Transform the columns values in np.array
+ones = kwhdata1[kwhdata1.columns[1]].to_numpy()
+sqft = kwhdata1[kwhdata1.columns[2]].to_numpy()
+retrofit = kwhdata1[kwhdata1.columns[3]].to_numpy()
+temp = kwhdata1[kwhdata1.columns[4]].to_numpy()
+
+constant= -83.6028
+sqft_coeff= 0.615
+retrofit_coeff =-109.666
+temp_coeff=3.25
+
+v= [constant, sqft_coeff, retrofit_coeff, temp_coeff]
+
+
+
+def model(coeffs, D):
+    # Unpack variables
+   constant, sqft_coeff, retrofit_coeff, temp_coeff = coeffs
+    
+    # Unpack parameters
+    #ones, sqft, retrofit, temp = D
+    
+    # Model
+    f = constant*ones + sqft_coeff*sqft + retrofit_coeff*retrofit + temp_coeff*temp
+    return f
+
+
+def sum_of_squares(coeff, cov, Y):
+    f = model(coeff, cov)
+    obj = np.array(((f - Y)**2)).sum()
+    return obj
+
+res = minimize(sum_of_squares, v, args=(cov, Y), options={'disp':True})
+
+
+
 
 
 
