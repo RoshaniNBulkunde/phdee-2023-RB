@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+    citecolor=black,
+}
+\usepackage{natbib}
+
+\usepackage{titlesec}
+\title{Homework 2}
+\author{rbulkunde3 Bulkunde}
+\date{January 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\section{Sample mean table}
+ See table \ref{tab:my_label}.
+
+\subsection{Python version}
+
+\begin{table}[ht]
+    \centering
+    \input{pythonsummary.tex}
+    \caption{Standard deviation are in paranthesis}
+    \label{tab:my_label}
+\end{table}
+
+\subsection{Stata version}
+
+\begin{table}[ht]
+    \centering
+    \input{summaryStata.tex}
+    \caption{Summary statistics produced using Stata}
+    \label{tab:statasummary}
+\end{table}
+
+\section{STATA Regression}
+\begin{table}[ht]
+    \centering
+    \input{stata_regress.tex}
+    \caption{Regression produced using Stata}
+    \label{tab:Regression}
+\end{table}
+
+\section{Graphs}
+
+\subsection{Python version: Kernel Density Plot}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale = 0.7]{python_kwh_hist.pdf}
+    \caption{Sample kernel density plot of the outcome variable.}
+    \label{fig:samplehist}
+\end{figure}
+
+\subsection{Stata version: two-way scatterplot}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics{Stata_twowayscatter.pdf}
+    \caption{two-way scatterplot}
+    \label{fig:statahist}
+\end{figure}
+
+\end{document}
