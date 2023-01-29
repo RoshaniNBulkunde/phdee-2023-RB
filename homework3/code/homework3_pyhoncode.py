@@ -209,7 +209,8 @@ zeroes = [0]*1000
 zeroes = np.array(zeroes)
 zeroes = pd.DataFrame(zeroes)
 
-ame =pd.concat([margeff_sqft_mean, margeff_retrofit_mean, margeff_temp_mean, zeroes], axis=1 )
+#Get the marginal of avarage marginal effect
+ame =pd.concat([zeroes, margeff_sqft_mean, margeff_retrofit_mean, margeff_temp_mean], axis=1 )
  
 ## Extract 2.5th and 97.5th percentile
 lb_ame = np.percentile(ame,2.5,axis = 0,interpolation = 'lower')
