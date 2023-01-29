@@ -100,27 +100,29 @@ nobs3 = int(ols.nobs)
 
 ##---- Calculate and save average marginal effect estimate 
 ### Marginal effect of constant
-margeff_constant_mean=0
+margeff_constant_mean1=0
 
 ### Average marginal effect of sqft
 eta_sqft = betaols[1]
 margeff_sqft = (eta_sqft * kwhData['electricity'])/kwhData['sqft']
-margeff_sqft_mean = margeff_sqft.mean()
+margeff_sqft_mean1 = margeff_sqft.mean()
 
 ### Average marginal effect of retrofit
 delta = (math.e)**betaols[2] # log of delta is coefficient of retrofit
 margeff_retrofit = ((delta-1)/(delta**kwhData['retrofit']))*kwhData['electricity']
-margeff_retrofit_mean = margeff_retrofit.mean()
+margeff_retrofit_mean1 = margeff_retrofit.mean()
 
 ### Average marginal effect of temperature
 eta_temp = betaols[3]
 margeff_temp = (eta_temp * kwhData['electricity'])/kwhData['temp']
-margeff_temp_mean = margeff_temp.mean()
+margeff_temp_mean1 = margeff_temp.mean()
 
 #Array of average marginal effect
-average_margeff = pd.Series([margeff_constant_mean, margeff_sqft_mean, margeff_retrofit_mean, margeff_temp_mean]) #save average marginal effect estimate 
+average_margeff = pd.Series([margeff_constant_mean1, margeff_sqft_mean1, margeff_retrofit_mean1, margeff_temp_mean1]) #save average marginal effect estimate 
 
 # Bootstrap by hand and get confidence intervals -----------------------------
+
+## Note that each bootstrap replication should perform both the regression and the second stage calculation of the marginal effect.
 ## Set values and initialize arrays to output to
 breps = 1000 # number of bootstrap replications
 olsbetablist = np.zeros((breps,params))
@@ -138,7 +140,7 @@ margeff_retrofit_mean = [0 for i in range(1000)]
 margeff_temp_mean = []
 margeff_temp_mean = [0 for i in range(1000)]
 
-#-------
+#-------For loop to bootstrap replication to perform both the regression and the second stage calculation of the marginal effect.
 ## Sample with replacement to get the size of the sample on each iteration
 for r in range(breps):
 ### Sample the data
@@ -167,9 +169,9 @@ for r in range(breps):
     margeff_temp = (eta_temp * kwhDataB['electricity'])/kwhDataB['temp']
     margeff_temp_mean[r]= margeff_temp.mean()
 
-#----------------    
+#----------End of For loop  
     
-#--------For Coeffcient of estimamtes
+#--------For Coeffcient of estimates to calculate confidence interval
 ## Extract 2.5th and 97.5th percentile
 lb = np.percentile(olsbetablist,2.5,axis = 0,interpolation = 'lower')
 ub = np.percentile(olsbetablist,97.5,axis = 0,interpolation = 'higher')
@@ -195,7 +197,7 @@ outputa = pd.DataFrame(outputa.stack().append(pd.Series(nobs3)))
 outputa.index = rownames
 outputa.columns = colnames   
     
-#-------For Marginal Avarage Effect
+#-------For Marginal Avarage Effect to calculate confidence interval
 margeff_sqft_mean = np.array(margeff_sqft_mean)  
 margeff_sqft_mean = pd.DataFrame(margeff_sqft_mean) 
 
@@ -209,7 +211,7 @@ zeroes = [0]*1000
 zeroes = np.array(zeroes)
 zeroes = pd.DataFrame(zeroes)
 
-#Get the marginal of avarage marginal effect
+#Get the estimates of avarage marginal effect
 ame =pd.concat([zeroes, margeff_sqft_mean, margeff_retrofit_mean, margeff_temp_mean], axis=1 )
  
 ## Extract 2.5th and 97.5th percentile
@@ -229,7 +231,7 @@ order = [1,2,3,0]
 outputb = pd.DataFrame(np.column_stack([average_margeff,ci_ame])).reindex(order)
 
 ## Row and column names
-rownames1 = pd.concat([pd.Series(['ln(sqft)','Retrofit','ln(Temperature)','Constant','Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for CIs
+rownames1 = pd.concat([pd.Series(['sqft','Retrofit','Temperature','Constant','Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for CIs
 colnames1 = ['Average Marginal Effect']
 
 ## Append CIs, # Observations, row and column names
@@ -241,3 +243,41 @@ estimates_output = pd.concat([outputa, outputb], axis = 1)
 
 ## Output directly to LaTeX
 estimates_output.style.to_latex('estimates_output.tex')
+
+########################################################################
+
+#-------Question 1 (f)
+
+#Graph the average marginal effects of outdoor temperature and square feet of the home with
+##bands for their bootstrapped confidence intervals
+
+## Create an array which contains marginal effect only for outdoor temperature and square feet of the home
+ame_temp_sqft = np.array([margeff_sqft_mean1, margeff_temp_mean1])
+
+# Create an array for lower bound CI 
+myorder = [0, 2, 1, 3]
+lbP_ame1 = [lbP_ame[i] for i in myorder]
+lbP_ame1 = lbP_ame1[2:]
+lbP_ame1 = np.array(lbP_ame1)
+
+# Create an array for upper bound CI 
+myorder = [0, 2, 1, 3]
+ubP_ame1 = [ubP_ame[i] for i in myorder]
+ubP_ame1 = ubP_ame1[2:]
+ubP_ame1 = np.array(ubP_ame1)
+
+# Plot regression output with error bars -------------------------------------
+lowbar = np.array(ame_temp_sqft - lbP_ame1)
+highbar = np.array(ubP_ame1 - ame_temp_sqft)
+plt.errorbar(y = ame_temp_sqft, x = np.arange(2), yerr = [lowbar,highbar], fmt = 'o', capsize = 5)
+plt.ylabel('Average marginal effects estimate')
+plt.xticks(np.arange(2),['sqft of home', 'Temperature'])
+plt.xlim((-0.5,1.5)) # Scales the figure more nicely
+plt.axhline(linewidth=2, color='r')
+plt.savefig('amebootstrappedCI.pdf',format='pdf')
+plt.show()
+
+
+
+
+
