@@ -73,12 +73,12 @@ average_margeff = pd.Series([margeff_constant_mean, margeff_sqft_mean, margeff_r
 ## Output table without bootstapping
 coefftable = pd.DataFrame((np.append(betaols,nobsa)),
                             columns=['Coefficient Estimates'], 
-                            index = ['Constant', 'ln(Sqft)', 'Retrofit', 'ln(Temperature)','Observations'])
+                            index = ['Constant', 'Sqft of home', 'Retrofit', 'Temperature','Observations'])
 
 
 margefftable = pd.DataFrame((np.append(average_margeff,nobsa)),
                             columns=['Average Marginal Effect'], 
-                            index = ['Constant', 'ln(Sqft)', 'Retrofit', 'ln(Temperature)','Observations'])
+                            index = ['Constant', 'Sqft of home', 'Retrofit', 'Temperature','Observations'])
 
 ## Output table 1 without bootstrapping
 outputtable1=pd.concat([coefftable, margefftable], axis=1, join='inner')
@@ -189,7 +189,7 @@ order = [1,2,3,0]
 outputa = pd.DataFrame(np.column_stack([betaols,ci])).reindex(order)
 
 ## Row and column names
-rownames = pd.concat([pd.Series(['ln(sqft)','Retrofit','ln(Temperature)','Constant','Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for CIs
+rownames = pd.concat([pd.Series(['sqft of home','Retrofit','Temperature','Constant','Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for CIs
 colnames = ['Estimates']
 
 ## Append CIs, # Observations, row and column names
@@ -231,7 +231,7 @@ order = [1,2,3,0]
 outputb = pd.DataFrame(np.column_stack([average_margeff,ci_ame])).reindex(order)
 
 ## Row and column names
-rownames1 = pd.concat([pd.Series(['sqft','Retrofit','Temperature','Constant','Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for CIs
+rownames1 = pd.concat([pd.Series(['sqft of home','Retrofit','Temperature','Constant','Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack() # Note this stacks an empty list to make room for CIs
 colnames1 = ['Average Marginal Effect']
 
 ## Append CIs, # Observations, row and column names
