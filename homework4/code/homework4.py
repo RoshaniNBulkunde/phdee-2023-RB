@@ -119,12 +119,43 @@ xvar = xvar.to_numpy() #convert to array
 
 bycatch = pd.DataFrame(FishBycatchLongR3a['bycatch']).reset_index().drop(['index'], axis = 1)
 bycatch = bycatch.to_numpy() #convert to array to use in OLS
+nobs3a = bycatch.shape
 
 # DID Estimates
-ols3a = sm.OLS(bycatch, xvar)
-betaols3afit = ols3a.fit()
+betaols3afit = sm.OLS(bycatch, xvar).fit()
 print(betaols3afit.summary())
 betaols3a = betaols3afit.params
+stderrols3a = betaols3afit.bse ## Extract the standard errors
+
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order3a = np.array([1,2,3,0])
+betaols3a = betaols3a[order3a]
+stderrols3a = stderrols3a[order3a]
+
+### Row and column names
+rownames3a = pd.concat([pd.Series(['Time Indicator', 'Treatment', 'Treatment*Post', 'Constant', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
+colnames3a = pd.Series(['Coefficients'])
+
+### Format Standard Errors
+stderrols3a = pd.Series(np.round(stderrols3a,2)) # Rounds to two decimal places and puts into a Series
+
+### Format estimates and append observations
+betaols3a = pd.Series(np.append(np.round(betaols3a,2), nobs3a))
+betaols3a = betaols3a.drop(index=5)
+stderrols3a = pd.Series((np.round(stderrols3a,2)))
+
+### Stack estimates over Standard Errors
+col3a = pd.concat([betaols3a,stderrols3a],axis = 1).stack()
+col3a1 = col3a
+
+### Output
+col3a.index = rownames3a
+col3a.columns = colnames3a
+
+print(col3a)
+
+col3a.to_latex('DID3a.tex')
 
 
 
@@ -160,10 +191,39 @@ Xvar3b = Xvar3b.to_numpy() #convert to array
 
 
 # DID Estimates
-ols3b = sm.OLS(bycatch, Xvar3b)
-betaols3bfit = ols3b.fit()
+betaols3bfit = sm.OLS(bycatch, Xvar3b).fit()
 print(betaols3bfit.summary())
 betaols3b = betaols3bfit.params
+stderrols3b = betaols3bfit.bse ## Extract the standard errors
+
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order3b = np.array([1,2,3,0])
+betaols3b = betaols3b[order3b]
+stderrols3b = stderrols3b[order3b]
+
+### Row and column names
+rownames3b = pd.concat([pd.Series(['Time Indicator', 'Treatment', 'Treatment*Post', 'Constant', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
+colnames3b = pd.Series(['Coefficients'])
+
+### Format Standard Errors
+stderrols3b = pd.Series(np.round(stderrols3b,2)) # Rounds to two decimal places and puts into a Series
+
+### Format estimates and append observations
+betaols3b = pd.Series(np.append(np.round(betaols3b,2), nobs3b))
+stderrols3b = pd.Series((np.round(stderrols3b,2)))
+
+### Stack estimates over Standard Errors
+col3b = pd.concat([betaols3b,stderrols3b],axis = 1).stack()
+col3b1 =col3b
+
+### Output
+col3b.index = rownames3b
+col3b.columns = colnames3b
+
+print(col3b)
+
+col3b.to_latex('DID3b.tex')
 
 #*************  Question 3 **************************************
 
@@ -195,8 +255,44 @@ Xvar3c = Xvar3c.to_numpy() #convert to array
 
 
 # DID Estimates
-ols3c = sm.OLS(bycatch, Xvar3c)
-betaols3cfit = ols3c.fit()
+betaols3cfit = sm.OLS(bycatch, Xvar3c).fit()
 print(betaols3cfit.summary())
-betaols3c = betaols3cfit.params
+betaols3c = betaols3cfit.params ## Extract the coeffcients
+stderrols3c = betaols3cfit.bse ## Extract the standard errors
+
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order3c = np.array([1,2,3,4,5,6,0])
+betaols3c = betaols3c[order3c]
+stderrols3c = stderrols3c[order3c]
+
+### Row and column names
+rownames4 = pd.concat([pd.Series(['Time Indicator', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon', 'Constant', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' '])],axis = 1).stack()
+colnames4 = pd.Series(['Coefficients'])
+
+### Format Standard Errors
+stderrols3c = pd.Series(np.round(stderrols3c,2)) # Rounds to two decimal places and puts into a Series
+
+### Format estimates and append observations
+betaols3c = pd.Series(np.append(np.round(betaols3c,2), nobs3c))
+stderrols3c = pd.Series((np.round(stderrols3c,2)))
+
+### Stack estimates over Standard Errors
+col3c = pd.concat([betaols3c,stderrols3c],axis = 1).stack()
+
+### Output
+col3c.index = rownames4
+col3c.columns = colnames4
+
+print(col3c)
+
+col3c.to_latex('DID3c.tex')
+
+####################################################################################
+col3a1.loc[4, 1] = ' '
+col3a1.loc[5, 0] = ' '
+col3a1.loc[5, 1] = ' '
+col3a1.loc[6, 0] = ' '
+col3a1.loc[6, 1] = ' '
+col3a1.loc[7, 0] = ' '
 
