@@ -1,0 +1,18 @@
+		(1)
+VARIABLES	LABELS	Demeaned Bycatch
+		
+demeaned_treatment	Demeaned Treatment	-8,149***
+		(478.0)
+o.demeaned_firmsize	Demeaned Firmsize = o,	-
+		
+demeaned_shrimp	Demeaned Shrimp (Pounds)	1.537***
+		(0.0622)
+demeaned_salmon	Demeaned Salmon (Pounds)	-0.428*
+		(0.223)
+Constant	Constant	-0.000241
+		(148.8)
+		
+Observations		1,200
+R-squared		0.426
+Standard errors in parentheses		
+*** p<0.01, ** p<0.05, * p<0.1		

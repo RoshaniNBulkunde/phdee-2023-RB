@@ -1,0 +1,22 @@
+	(1)
+VARIABLES	Bycatch
+	
+firm	-109.5***
+	(15.02)
+month	-2.274
+	(36.81)
+treatment	-8,674***
+	(561.5)
+firmsize	-966.0
+	(1,073)
+shrimp	1.044***
+	(0.0154)
+salmon	0.529***
+	(0.0672)
+Constant	4,777***
+	(743.6)
+	
+Observations	1,200
+R-squared	0.992
+Standard errors in parentheses	
+*** p<0.01, ** p<0.05, * p<0.1	

@@ -1,0 +1,22 @@
+		(1)
+VARIABLES	LABELS	Bycatch
+		
+firm	Firm ID	-109.5**
+		(41.87)
+month	Month	-2.274
+		(29.29)
+treatment	Treatment	-8,674***
+		(2,742)
+firmsize	Firmsize	-966.0
+		(3,222)
+shrimp	Shrimp (Pounds)	1.044***
+		(0.0500)
+salmon	Salmon (Pounds)	0.529**
+		(0.200)
+Constant	Constant	4,777**
+		(1,998)
+		
+Observations		1,200
+R-squared		0.992
+Robust standard errors in parentheses		
+*** p<0.01, ** p<0.05, * p<0.1		
