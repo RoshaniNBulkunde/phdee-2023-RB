@@ -1,22 +1,118 @@
 		(1)
 VARIABLES	LABELS	Bycatch
 		
-firm	Firm ID	-109.5**
-		(41.87)
-month	Month	-2.274
-		(29.29)
-treatment	Treatment	-8,674***
-		(2,742)
-firmsize	Firmsize	-966.0
-		(3,222)
-shrimp	Shrimp (Pounds)	1.044***
-		(0.0500)
-salmon	Salmon (Pounds)	0.529**
-		(0.200)
-Constant	Constant	4,777**
-		(1,998)
+2.firm	Firm = 2	-134,472
+		(174,925)
+3.firm	Firm = 3	-34,997
+		(43,631)
+4.firm	Firm = 4	-98,324
+		(130,621)
+5.firm	Firm = 5	5,290
+		(27,166)
+6.firm	Firm = 6	-1,332
+		(21,404)
+7.firm	Firm = 7	-159,451
+		(207,342)
+8.firm	Firm = 8	-36,898
+		(61,697)
+9.firm	Firm = 9	-64,502
+		(95,376)
+10.firm	Firm = 10	-32,788
+		(63,779)
+11.firm	Firm = 11	-95,525
+		(130,770)
+12.firm	Firm = 12	-4,313
+		(14,261)
+13.firm	Firm = 13	-37,163
+		(58,944)
+14.firm	Firm = 14	-116,490
+		(159,244)
+15.firm	Firm = 15	-60,144
+		(95,910)
+16.firm	Firm = 16	-10,963
+		(24,968)
+17.firm	Firm = 17	-52,835
+		(78,191)
+18.firm	Firm = 18	-173,637
+		(223,692)
+19.firm	Firm = 19	-59,459
+		(82,374)
+20.firm	Firm = 20	74,132
+		(103,313)
+21.firm	Firm = 21	-171,280
+		(223,482)
+22.firm	Firm = 22	-93,482
+		(127,347)
+23.firm	Firm = 23	-49,260
+		(69,353)
+24.firm	Firm = 24	22,222***
+		(7,072)
+25.firm	Firm = 25	42,442*
+		(21,525)
+26.firm	Firm = 26	-107,994
+		(144,393)
+27.firm	Firm = 27	-20,464***
+		(4,653)
+28.firm	Firm = 28	-91,615
+		(114,828)
+29.firm	Firm = 29	-372.6
+		(17,382)
+30.firm	Firm = 30	-131,988
+		(163,961)
+31.firm	Firm = 31	-40,065
+		(49,774)
+32.firm	Firm = 32	-91,139
+		(128,575)
+33.firm	Firm = 33	-14,429
+		(36,514)
+34.firm	Firm = 34	-91,148
+		(130,149)
+35.firm	Firm = 35	-99,211
+		(127,026)
+36.firm	Firm = 36	-134,696
+		(177,098)
+37.firm	Firm = 37	-71,618
+		(81,689)
+38.firm	Firm = 38	-44,274
+		(52,748)
+39.firm	Firm = 39	-162,747
+		(207,644)
+40.firm	Firm = 40	2,001
+		(29,387)
+41.firm	Firm = 41	-46,468
+		(64,563)
+42.firm	Firm = 42	-76,687
+		(102,131)
+43.firm	Firm = 43	-28,854
+		(60,683)
+44.firm	Firm = 44	-173,765
+		(223,972)
+45.firm	Firm = 45	48,201
+		(66,683)
+46.firm	Firm = 46	-13,607
+		(22,125)
+47.firm	Firm = 47	-160,630
+		(207,769)
+48.firm	Firm = 48	-147,111
+		(190,460)
+49.firm	Firm = 49	-144,397
+		(191,979)
+50.firm	Firm = 50	-108,604
+		(145,198)
+month	Month	32.98
+		(89.86)
+treatment	Treatment	-8,320***
+		(2,650)
+o.firmsize	Firmsize = o,	-
+		
+shrimp	Shrimp (Pounds)	1.531***
+		(0.172)
+salmon	Salmon (Pounds)	-0.610
+		(1.088)
+Constant	Constant	186,390
+		(238,156)
 		
 Observations		1,200
-R-squared		0.992
+R-squared		0.996
 Robust standard errors in parentheses		
 *** p<0.01, ** p<0.05, * p<0.1		

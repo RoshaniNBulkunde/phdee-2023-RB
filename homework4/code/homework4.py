@@ -379,7 +379,9 @@ print(col3cC)
 
 col3cC.to_latex('DID3c_cluster_python.tex')
 
-####################################################################################
+###############################################################################################
+
+#####***************** Question 3--- part d ************************************************#
 col3a1.loc[4, 1] = ' '
 col3a1.loc[5, 0] = ' '
 col3a1.loc[5, 1] = ' '
@@ -387,3 +389,17 @@ col3a1.loc[6, 0] = ' '
 col3a1.loc[6, 1] = ' '
 col3a1.loc[7, 0] = ' '
 
+### Row and column names
+rownames5 = pd.concat([pd.Series(['T=2017 intercept', 'Firm', 'Month', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon','constant', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' ',' ', ' '])],axis = 1).stack()
+colnames5 = pd.Series(['Coefficients'])
+
+rownames5=pd.DataFrame(rownames5)
+
+col3cC1 = pd.DataFrame(col3cC)
+col3bC1 = pd.DataFrame(col3bC)
+#col3cC.index = rownames4
+#col3cC.columns = pd.MultiIndex.from_tuples(colnames4)
+#summary = pd.MultiIndex.from_frame([rownames5, col3cC])
+
+#xx=pd.concat((col3bC1,col3cC1), ignore_index=True, join='inner', axis=1)
+y=pd.merge(col3bC1,col3cC1, how='right', on=['index'], axis=1)

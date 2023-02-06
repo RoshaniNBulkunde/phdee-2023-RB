@@ -28,29 +28,47 @@ reshape long shrimp salmon bycatch, i(firm) j(month)
 *        Question 1 a
 ***********************************************
 *----Generate indicator variables for each firm.
+
+ forvalues i = 1/50 {
+             generate firm`i' = (firm==`i')
+                     }
+
+*----- Generate Interaction term
 gen post=(month>12) //post=1 if month>12 else zero
 gen treatment=post*treated //The firmis treated if treated=1 and post=1
 
-****Without Cluster Standard Errors
-**Include these indicator variables in your OLS regression to control for fixed effects directly
-regress bycatch firm month treatment firmsize shrimp salmon
-
 *----- Labeling variables
-la var firm "Firm ID"
+la var firm "Firm"
 la var month "Month"
 la var treatment "Treatment"
 la var firmsize "Firmsize"
 la var shrimp "Shrimp (Pounds)"
 la var salmon "Salmon (Pounds)"
 la var bycatch "Bycatch"
-** Output table
-outreg2 using q1a_stata.tex, label tex(fragment) replace
 
+
+/*
+# 
+regress bycatch firm1 firm2 firm3 firm4 firm5 firm6 firm7 firm8 firm9 firm10 firm11 firm12 firm13 firm14 ///
+firm15 firm16 firm17 firm18 firm19 firm20 firm21 firm22 firm23 firm24 firm25 firm26 firm27 firm28 firm29 firm30 ///
+firm31 firm32 firm33 firm34 firm35 firm36 firm37 firm38 firm39 firm40 firm41 firm42 firm43 firm44 firm45 ///
+firm47 firm48 firm49 firm50 month treatment firmsize shrimp salmon, vce(cluster firm) */
 
 *********** With Cluster Standard Errors***************
-regress bycatch firm month treatment firmsize shrimp salmon, cluster(firm)
-
+* Method 1
+regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
 outreg2 using q1a_cluster_stata.tex, label tex(fragment) replace
+
+* Method 2
+eststo reg1a: quietly regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
+	
+esttab reg1a using q1a_stata.tex, replace b(%3.2f) se(%3.2f) sfmt(%12.0fc) ///
+fragment booktabs  ///
+keep(treatment firmsize shrimp salmon)  ///
+mtitles(DID estimates)  ///
+varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)")
+
+
 
 
 
@@ -96,7 +114,7 @@ outreg2 using q1b_stata.tex, label tex(fragment) replace
 ****** With Cluster standard Errors**************************
 
 ** Estimate the within-transformation
-regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, cluster(firm)
+regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, vce(cluster firm)
 outreg2 using q1b_cluster_stata.tex, label tex(fragment) replace
 
 /************************************************************************
@@ -105,12 +123,12 @@ Display the results of your estimates from (a) and (b) in the same table, report
 standard errors or confidence intervals as previously
 ***************************************************************************/
 
-eststo reg1:quietly regress bycatch firm month treatment firmsize shrimp salmon, cluster(firm)
-eststo reg2: quietly regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, cluster(firm)
+eststo reg1:quietly regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
+eststo reg2: quietly regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, vce(cluster firm)
 	
 esttab reg1 reg2 using DID_stata.tex, replace b(%3.2f) se(%3.2f) sfmt(%12.0fc) ///
 fragment booktabs ///
-drop(firm month) ///
+keep(treatment firmsize shrimp salmon demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon) ///
 mtitles(DID Within-Transformation) ///
 varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)" bycatch "Bycatch" ///
 demeaned_treatment "Demeaned Treatment" demeaned_firmsize "Demeaned Firmsize" demeaned_shrimp "Demeaned Shrimp (Pounds)" demeaned_salmon "Demeaned Salmon (Pounds)")
