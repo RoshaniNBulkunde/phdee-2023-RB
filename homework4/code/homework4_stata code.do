@@ -125,14 +125,21 @@ standard errors or confidence intervals as previously
 
 eststo reg1:quietly regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
 eststo reg2: quietly regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, vce(cluster firm)
-	
+
+/*
 esttab reg1 reg2 using DID_stata.tex, replace b(%3.2f) se(%3.2f) sfmt(%12.0fc) ///
-fragment booktabs ///
+fragment booktabs nostar unstack ///
 keep(treatment firmsize shrimp salmon demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon) ///
-mtitles(DID Within-Transformation) ///
+varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)" bycatch "Bycatch" ///
+demeaned_treatment "Demeaned Treatment" demeaned_firmsize "Demeaned Firmsize" demeaned_shrimp "Demeaned Shrimp (Pounds)" demeaned_salmon "Demeaned Salmon (Pounds)") */
+
+
+esttab reg1 reg2 using DID_stata.tex, replace ///
+cells( "b(star pattern(1 1) fmt(%9.2fc) label(coef.))" "se(pattern(1 1) par label(SD))") stats(N obs, fmt(%9.0fc) labels("Observations")) starlevels(* 0.05 ** 0.01) ///
+mtitles(Treated Controls  ) label replace prehead({\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi} \begin{tabular}{l*{3}{cc}} \hline) ///
+prefoot( & & \\) postfoot(\hline \multicolumn{4}{c}{ ** p$<$0.01, * p$<$0.05} \\ \end{tabular} }) ///
+fragment booktabs nostar unstack ///
+keep(treatment firmsize shrimp salmon demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon) ///
 varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)" bycatch "Bycatch" ///
 demeaned_treatment "Demeaned Treatment" demeaned_firmsize "Demeaned Firmsize" demeaned_shrimp "Demeaned Shrimp (Pounds)" demeaned_salmon "Demeaned Salmon (Pounds)")
-
-
-
 

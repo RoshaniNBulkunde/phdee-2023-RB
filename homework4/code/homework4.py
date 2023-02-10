@@ -382,24 +382,198 @@ col3cC.to_latex('DID3c_cluster_python.tex')
 ###############################################################################################
 
 #####***************** Question 3--- part d ************************************************#
-col3a1.loc[4, 1] = ' '
-col3a1.loc[5, 0] = ' '
-col3a1.loc[5, 1] = ' '
-col3a1.loc[6, 0] = ' '
-col3a1.loc[6, 1] = ' '
-col3a1.loc[7, 0] = ' '
+
+blank_df = pd.DataFrame({'A' : [" "]})
+
+## Create the subset of the data needed only for this part of the question
+FishBycatchLongR3 = FishBycatchLongR.drop(['firmsize', 'salmon', 'shrimp'], axis = 1)
+
+## Create a subsample of the data that have observations in December 2017 and January 2018 only
+monthvalues = [12, 13]
+FishBycatchLongR3a = FishBycatchLongR3[FishBycatchLongR3.month.isin(monthvalues) == True]
+
+## Create new variables that indicate the pre-post situation
+FishBycatchLongR3a['pre'] = FishBycatchLongR3a.apply(lambda row: 13 - row.month, axis = 1) ## Pre=1 if December 2017
+FishBycatchLongR3a['post'] = FishBycatchLongR3a.apply(lambda row: row.month - 12, axis = 1) ## Post=1 if January 2018
+
+## Now create the variables needed for our regression
+FishBycatchLongR3a['posttreat'] = FishBycatchLongR3a.apply(lambda row: row.post*row.treated, axis = 1)
+#FishBycatchLongR3a = FishBycatchLongR3a.drop(['post'], axis = 1)
+constant3a = pd.DataFrame(np.ones((100))) # Vector of ones for the constant
+
+## Dataframes
+treatment = pd.DataFrame(FishBycatchLongR3a['treated']).reset_index().drop(['index'], axis = 1)
+pre2017_intercept = pd.DataFrame(FishBycatchLongR3a['pre']).reset_index().drop(['index'], axis = 1)
+posttreatment = pd.DataFrame(FishBycatchLongR3a['posttreat']).reset_index().drop(['index'], axis = 1)
+
+## OLS setup
+xvar = pd.concat([constant3a, pre2017_intercept, treatment, posttreatment], axis = 1) # X matrix
+xvar.columns =['constant3a', 'pre2017_intercept', 'treatment', 'posttreatment'] # naming columns
+xvar = xvar.to_numpy() #convert to array
+
+bycatch = pd.DataFrame(FishBycatchLongR3a['bycatch']).reset_index().drop(['index'], axis = 1)
+bycatch = bycatch.to_numpy() #convert to array to use in OLS
+nobs3a = bycatch.shape
+
+
+
+#********************** DID Estimates With cluster-robust standard errors**************************#
+
+ols3aC = sm.OLS(bycatch, xvar) #Fit in the model
+betaols3afitC = ols3aC.fit(cov_type = 'cluster', cov_kwds={'groups': FishBycatchLongR3a['firm']})
+print(betaols3afitC.summary())
+betaols3aC = betaols3afitC.params
+stderrols3aC = betaols3afitC.bse
+
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order3a = np.array([1,2,3,0])
+betaols3aC = betaols3aC[order3a]
+stderrols3aC = stderrols3aC[order3a]
 
 ### Row and column names
-rownames5 = pd.concat([pd.Series(['T=2017 intercept', 'Firm', 'Month', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon','constant', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' ',' ', ' '])],axis = 1).stack()
-colnames5 = pd.Series(['Coefficients'])
+rownames3a = pd.concat([pd.Series(['T=2017 intercept', 'Treatment', 'Treatment*Post', 'Constant', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
+colnames3a = pd.Series(['Coefficients'])
 
-rownames5=pd.DataFrame(rownames5)
+### Format Standard Errors
+stderrols3aC = pd.Series(np.round(stderrols3aC,2)) # Rounds to two decimal places and puts into a Series
 
-col3cC1 = pd.DataFrame(col3cC)
-col3bC1 = pd.DataFrame(col3bC)
-#col3cC.index = rownames4
-#col3cC.columns = pd.MultiIndex.from_tuples(colnames4)
-#summary = pd.MultiIndex.from_frame([rownames5, col3cC])
+### Format estimates and append observations
+betaols3aC = pd.Series(np.append(np.round(betaols3aC,2), nobs3a))
+betaols3aC = betaols3aC.drop(index=5)
+stderrols3aC = pd.Series((np.round(stderrols3aC,2)))
 
-#xx=pd.concat((col3bC1,col3cC1), ignore_index=True, join='inner', axis=1)
-y=pd.merge(col3bC1,col3cC1, how='right', on=['index'], axis=1)
+### Stack estimates over Standard Errors
+col3aC = pd.concat([betaols3aC,stderrols3aC, blank_df, blank_df, blank_df, blank_df, blank_df, blank_df],axis = 1).stack()
+col3aC = col3aC.to_numpy()
+col3aC_order=np.array([0,1,10,11,12,13,2,3,4,5,6,7,8,9,14])
+col3aC =col3aC[col3aC_order]
+
+#####################################################################################################################################
+#*************  Question 3 **************************************
+
+# Part b --------------------------------------------------------------
+
+## Create the subset of the data needed only for this part of the question
+FishBycatchLong3b = FishBycatchLongR.drop(['firmsize', 'salmon', 'shrimp'], axis = 1)
+
+## Create new variables that indicate the pre-post situation
+def post(value):
+    if value < 13:  ## Post=0 if 2017
+        return 0
+    elif 13 <= value: ## Post=1 if 2018
+        return 1
+ 
+FishBycatchLong3b['post'] = FishBycatchLong3b['month'].map(post)
+
+## Now create the variables needed for our regression
+FishBycatchLong3b['posttreat'] = FishBycatchLong3b.apply(lambda row: row.post*row.treated, axis = 1)   # posttreat=1 if treated=1 and post=1
+
+## Set up a few things we will need
+bycatch = FishBycatchLong3b['bycatch'].to_numpy() # y variable
+nobs3b = bycatch.shape # Number of observations
+
+FishBycatchLong3b = FishBycatchLong3b[["firm", "month", "treated", "posttreat",  "post", "bycatch"]] #Rearranging the columns
+Xvar3b = FishBycatchLong3b.drop(['post', 'bycatch'] ,axis = 1) #Create Xvar matrix
+
+Xvar3b = Xvar3b.to_numpy() #convert to array
+
+
+
+#******************************DID Estimates With cluster-robust standard errors*********************#
+ols3bC = sm.OLS(bycatch, Xvar3b)
+betaols3bfitC = ols3bC.fit(cov_type = 'cluster', cov_kwds={'groups': FishBycatchLong3b['firm']}) 
+print(betaols3bfitC.summary())
+betaols3bC = betaols3bfitC.params
+stderrols3bC = betaols3bfitC.bse ## Extract the standard errors
+
+## Build output table
+
+### Row and column names
+rownames3b = pd.concat([pd.Series(['Firm', 'Month', 'Treatment', 'Treatment*Post', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
+colnames3b = pd.Series(['Coefficients'])
+
+### Format Standard Errors
+stderrols3bC = pd.Series(np.round(stderrols3bC,2)) # Rounds to two decimal places and puts into a Series
+
+### Format estimates and append observations
+betaols3bC = pd.Series(np.append(np.round(betaols3bC,2), nobs3b))
+stderrols3bC = pd.Series((np.round(stderrols3bC,2)))
+
+### Stack estimates over Standard Errors
+col3bC = pd.concat([betaols3bC,stderrols3bC,blank_df, blank_df, blank_df, blank_df, blank_df, blank_df],axis = 1).stack()
+col3bC = col3bC.to_numpy()
+col3bC_order=np.array([0,1,8,9,10,11,12,13,2,3,4,5,6,7,14])
+col3bC =col3bC[col3bC_order]
+
+####################################################################################################################
+
+#*************  Question 3 **************************************
+
+# Part c --------------------------------------------------------------
+
+## Create the subset of the data needed only for this part of the question
+FishBycatchLong3c = FishBycatchLongR
+
+## Create new variables that indicate the pre-post situation
+def post(value):
+    if value < 13:  ## Post=0 if 2017
+        return 0
+    elif 13 <= value: ## Post=1 if 2018
+        return 1
+ 
+FishBycatchLong3c['post'] = FishBycatchLong3c['month'].map(post)
+
+## Now create the variables needed for our regression
+FishBycatchLong3c['posttreat'] = FishBycatchLong3c.apply(lambda row: row.post*row.treated, axis = 1)   # posttreat=1 if treated=1 and post=1
+
+## Set up a few things we will need
+bycatch = FishBycatchLong3c['bycatch'].to_numpy() # Y variable
+nobs3c = bycatch.shape
+
+FishBycatchLong3c = FishBycatchLong3c[["firm", "month", "treated", "posttreat", "firmsize", "shrimp", "salmon", "bycatch", "post"]] # reordering columns
+Xvar3c = FishBycatchLong3c.drop(['post', 'bycatch'] ,axis = 1) #Create Xvar matrix
+Xvar3c = Xvar3c.to_numpy() #convert to array
+
+
+
+#****************** DID Estimates with cluster-robust standard errors *********************#
+ols3cfit = sm.OLS(bycatch, Xvar3c)
+betaols3cfitC= ols3cfit.fit(cov_type = 'cluster', cov_kwds={'groups': FishBycatchLong3c['firm']})
+print(betaols3cfitC.summary())
+betaols3cC = betaols3cfitC.params ## Extract the coeffcients
+stderrols3cC = betaols3cfitC.bse ## Extract the standard errors
+
+## Build output table
+
+### Row and column names
+rownames4 = pd.concat([pd.Series(['Firm', 'Month', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' '])],axis = 1).stack()
+colnames4 = pd.Series(['Coefficients'])
+
+### Format Standard Errors
+stderrols3cC = pd.Series(np.round(stderrols3cC,2)) # Rounds to two decimal places and puts into a Series
+
+### Format estimates and append observations
+betaols3cC = pd.Series(np.append(np.round(betaols3cC,2), nobs3c))
+stderrols3cC = pd.Series((np.round(stderrols3cC,2)))
+
+### Stack estimates over Standard Errors
+col3cC = pd.concat([betaols3cC,stderrols3cC],axis = 1).stack()
+col3cC = col3cC.to_numpy()
+
+col3aC=pd.DataFrame(col3aC)
+col3bC=pd.DataFrame(col3bC)
+col3cC=pd.DataFrame(col3cC)
+
+Col4 = pd.concat([col3aC,col3bC,col3cC], axis = 1)
+
+rownames5 = pd.concat([pd.Series(['Month', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon','constant', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' '])],axis = 1).stack()
+rownames5 = rownames5.reset_index()
+rownames5 =rownames5[0]
+
+
+Col4.index = rownames5
+
+Col4.to_latex('3d_python.tex')
+
+
