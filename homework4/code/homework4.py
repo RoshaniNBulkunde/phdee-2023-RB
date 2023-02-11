@@ -126,7 +126,7 @@ nobs3a = bycatch.shape
 #********************** DID Estimates Without cluster-robust standard errors**************************#
 betaols3afit = sm.OLS(bycatch, xvar).fit()
 print(betaols3afit.summary())
-betaols3a = betaols3afit.params
+betaols3a = betaols3afit.params ## Extract the coeffcients
 stderrols3a = betaols3afit.bse ## Extract the standard errors
 
 ## Build output table
@@ -134,6 +134,7 @@ stderrols3a = betaols3afit.bse ## Extract the standard errors
 order3a = np.array([1,2,3,0])
 betaols3a = betaols3a[order3a]
 stderrols3a = stderrols3a[order3a]
+
 
 ### Row and column names
 rownames3a = pd.concat([pd.Series(['T=2017 intercept', 'Treatment', 'Treatment*Post', 'Constant', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
@@ -145,7 +146,7 @@ stderrols3a = pd.Series(np.round(stderrols3a,2)) # Rounds to two decimal places 
 ### Format estimates and append observations
 betaols3a = pd.Series(np.append(np.round(betaols3a,2), nobs3a))
 betaols3a = betaols3a.drop(index=5)
-stderrols3a = pd.Series((np.round(stderrols3a,2)))
+stderrols3a = stderrols3a.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3a = pd.concat([betaols3a,stderrols3a],axis = 1).stack()
@@ -184,7 +185,8 @@ stderrols3aC = pd.Series(np.round(stderrols3aC,2)) # Rounds to two decimal place
 ### Format estimates and append observations
 betaols3aC = pd.Series(np.append(np.round(betaols3aC,2), nobs3a))
 betaols3aC = betaols3aC.drop(index=5)
-stderrols3aC = pd.Series((np.round(stderrols3aC,2)))
+stderrols3aC = stderrols3aC.map('({:.2f})'.format)
+
 
 ### Stack estimates over Standard Errors
 col3aC = pd.concat([betaols3aC,stderrols3aC],axis = 1).stack()
@@ -244,7 +246,7 @@ stderrols3b = pd.Series(np.round(stderrols3b,2)) # Rounds to two decimal places 
 
 ### Format estimates and append observations
 betaols3b = pd.Series(np.append(np.round(betaols3b,2), nobs3b))
-stderrols3b = pd.Series((np.round(stderrols3b,2)))
+stderrols3b  = stderrols3b.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3b = pd.concat([betaols3b,stderrols3b],axis = 1).stack()
@@ -276,7 +278,7 @@ stderrols3bC = pd.Series(np.round(stderrols3bC,2)) # Rounds to two decimal place
 
 ### Format estimates and append observations
 betaols3bC = pd.Series(np.append(np.round(betaols3bC,2), nobs3b))
-stderrols3bC = pd.Series((np.round(stderrols3bC,2)))
+stderrols3bC = stderrols3bC.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3bC = pd.concat([betaols3bC,stderrols3bC],axis = 1).stack()
@@ -335,7 +337,7 @@ stderrols3c = pd.Series(np.round(stderrols3c,2)) # Rounds to two decimal places 
 
 ### Format estimates and append observations
 betaols3c = pd.Series(np.append(np.round(betaols3c,2), nobs3c))
-stderrols3c = pd.Series((np.round(stderrols3c,2)))
+stderrols3c = stderrols3c.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3c = pd.concat([betaols3c,stderrols3c],axis = 1).stack()
@@ -366,7 +368,7 @@ stderrols3cC = pd.Series(np.round(stderrols3cC,2)) # Rounds to two decimal place
 
 ### Format estimates and append observations
 betaols3cC = pd.Series(np.append(np.round(betaols3cC,2), nobs3c))
-stderrols3cC = pd.Series((np.round(stderrols3cC,2)))
+stderrols3cC = stderrols3cC.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3cC = pd.concat([betaols3cC,stderrols3cC],axis = 1).stack()
@@ -380,6 +382,9 @@ print(col3cC)
 col3cC.to_latex('DID3c_cluster_python.tex')
 
 ###############################################################################################
+###############################################################################################
+
+
 
 #####***************** Question 3--- part d ************************************************#
 
@@ -425,28 +430,23 @@ print(betaols3afitC.summary())
 betaols3aC = betaols3afitC.params
 stderrols3aC = betaols3afitC.bse
 
-## Build output table
-### Reorder output (I probably should figure out a way to do this all at once)
-order3a = np.array([1,2,3,0])
-betaols3aC = betaols3aC[order3a]
-stderrols3aC = stderrols3aC[order3a]
 
-### Row and column names
-rownames3a = pd.concat([pd.Series(['T=2017 intercept', 'Treatment', 'Treatment*Post', 'Constant', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
-colnames3a = pd.Series(['Coefficients'])
+betaols3aC = np.delete(betaols3aC, [0,1]) #deleting the observation forn t=2017 intercept and constant
+stderrols3aC = np.delete(stderrols3aC, [0,1]) #deleting the observation forn t=2017 intercept and constant
+
 
 ### Format Standard Errors
 stderrols3aC = pd.Series(np.round(stderrols3aC,2)) # Rounds to two decimal places and puts into a Series
 
 ### Format estimates and append observations
 betaols3aC = pd.Series(np.append(np.round(betaols3aC,2), nobs3a))
-betaols3aC = betaols3aC.drop(index=5)
-stderrols3aC = pd.Series((np.round(stderrols3aC,2)))
+betaols3aC = betaols3aC.drop(index=3)
+stderrols3aC = stderrols3aC.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
-col3aC = pd.concat([betaols3aC,stderrols3aC, blank_df, blank_df, blank_df, blank_df, blank_df, blank_df],axis = 1).stack()
+col3aC = pd.concat([betaols3aC,stderrols3aC, blank_df, blank_df, blank_df, blank_df, blank_df,blank_df],axis = 1).stack()
 col3aC = col3aC.to_numpy()
-col3aC_order=np.array([0,1,10,11,12,13,2,3,4,5,6,7,8,9,14])
+col3aC_order=np.array([0,1,8,9,2,3,4,5,6,7,10])
 col3aC =col3aC[col3aC_order]
 
 #####################################################################################################################################
@@ -487,23 +487,24 @@ print(betaols3bfitC.summary())
 betaols3bC = betaols3bfitC.params
 stderrols3bC = betaols3bfitC.bse ## Extract the standard errors
 
-## Build output table
 
-### Row and column names
-rownames3b = pd.concat([pd.Series(['Firm', 'Month', 'Treatment', 'Treatment*Post', 'Observations']),pd.Series([' ',' ',' ',' '])],axis = 1).stack()
-colnames3b = pd.Series(['Coefficients'])
+betaols3bC = np.delete(betaols3bC, [0,1]) #deleting the observation for firm and month
+stderrols3bC = np.delete(stderrols3bC, [0,1]) #deleting the observation for firm and month
+
+
+
 
 ### Format Standard Errors
 stderrols3bC = pd.Series(np.round(stderrols3bC,2)) # Rounds to two decimal places and puts into a Series
 
 ### Format estimates and append observations
 betaols3bC = pd.Series(np.append(np.round(betaols3bC,2), nobs3b))
-stderrols3bC = pd.Series((np.round(stderrols3bC,2)))
+stderrols3bC = stderrols3bC.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3bC = pd.concat([betaols3bC,stderrols3bC,blank_df, blank_df, blank_df, blank_df, blank_df, blank_df],axis = 1).stack()
 col3bC = col3bC.to_numpy()
-col3bC_order=np.array([0,1,8,9,10,11,12,13,2,3,4,5,6,7,14])
+col3bC_order=np.array([0,1,8,9,2,3,4,5,6,7,10])
 col3bC =col3bC[col3bC_order]
 
 ####################################################################################################################
@@ -544,18 +545,18 @@ print(betaols3cfitC.summary())
 betaols3cC = betaols3cfitC.params ## Extract the coeffcients
 stderrols3cC = betaols3cfitC.bse ## Extract the standard errors
 
-## Build output table
 
-### Row and column names
-rownames4 = pd.concat([pd.Series(['Firm', 'Month', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' '])],axis = 1).stack()
-colnames4 = pd.Series(['Coefficients'])
+
+betaols3cC = np.delete(betaols3cC, [0,1]) #deleting the observation for firm and month
+stderrols3cC = np.delete(stderrols3cC, [0,1]) #deleting the observation for firm and month
+
 
 ### Format Standard Errors
 stderrols3cC = pd.Series(np.round(stderrols3cC,2)) # Rounds to two decimal places and puts into a Series
 
 ### Format estimates and append observations
 betaols3cC = pd.Series(np.append(np.round(betaols3cC,2), nobs3c))
-stderrols3cC = pd.Series((np.round(stderrols3cC,2)))
+stderrols3cC = stderrols3cC.map('({:.2f})'.format)
 
 ### Stack estimates over Standard Errors
 col3cC = pd.concat([betaols3cC,stderrols3cC],axis = 1).stack()
@@ -567,13 +568,15 @@ col3cC=pd.DataFrame(col3cC)
 
 Col4 = pd.concat([col3aC,col3bC,col3cC], axis = 1)
 
-rownames5 = pd.concat([pd.Series(['Month', 'Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon','constant', 'Observations']),pd.Series([' ',' ',' ',' ',' ',' ',' '])],axis = 1).stack()
+rownames5 = pd.concat([pd.Series(['Treatment', 'Treatment*Post', 'Firmsize', 'Shrimp','Salmon', 'Observations']),pd.Series([' ',' ',' ',' ',' '])],axis = 1).stack()
 rownames5 = rownames5.reset_index()
 rownames5 =rownames5[0]
 
+colnames5 = pd.Series(['(3a)','(3b)','(3c)'])
+Col4.columns = colnames5
 
 Col4.index = rownames5
 
-Col4.to_latex('3d_python.tex')
+Col4.to_latex('output3d_python.tex')
 
 
