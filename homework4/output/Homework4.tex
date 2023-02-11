@@ -1,0 +1,145 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+    citecolor=black,
+}
+\usepackage{natbib}
+
+\usepackage{titlesec}
+
+\title{Homework 4}
+\author{Roshani Bulkunde}
+\date{February 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Python}
+
+\subsection{Question 1}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale = 0.7]{paralleltrend.pdf}
+    \caption{Parallel trends of bycatch}
+    \label{fig:paralleltrend}
+\end{figure}
+
+From figure \ref{fig:paralleltrend}, I can say there are parallel trends before the treatment. 
+
+\subsection{Question 2}
+The DID estimate is -68374.51. The intuition of this estimate is that bycatch is reduced by -68374.51 in the firms that received the best practices to reduce bycatch compared to the firms that did not receive the information.
+
+\subsection{Question 3 (a)}
+\begin{table}[ht]
+    \centering
+    \input{DID3a_python.tex}
+    \caption{Question 3a without clustered standard errors }
+    \label{tab:DID3a_python}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \input{DID3a_clusterstd_python.tex}
+    \caption{Question 3a with clustered standard errors }
+    \label{tab:DID3a_clusterstd_python}
+\end{table}
+
+Table \ref{tab:DID3a_clusterstd_python} reports the coefficient estimates and clustered-standard errors in the bracket. The sample includes the observations in December 2017 and January
+2018 only. 
+
+\newpage
+
+\subsection{Question 3 (b)}
+\begin{table}[ht]
+    \centering
+    \input{DID3b_python.tex}
+    \caption{Question 3b without clustered standard errors }
+    \label{tab:DID3b_python}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \input{DID3b_clusterstd_python.tex}
+    \caption{Question 3b with clustered standard errors }
+    \label{tab:DID3b_clusterstd_python}
+\end{table}
+
+Table \ref{tab:DID3b_clusterstd_python} reports the coefficients which estimate the treatment effect of the program on bycatch using a regression-based difference-in-differences estimator using the regression. Using this estimation, the coefficient can be interpreted as bycatch reduced by -85470.13 in the firms that received the information about best practices to reduce bycatch compared to the firms that did not receive the information. The reduction in the bycatch in part b is smaller than the part a.
+
+\newpage
+
+\subsection{Question 3 (c)}
+\begin{table}[ht]
+    \centering
+    \input{DID3c_python.tex}
+    \caption{Question 3c without clustered standard errors }
+    \label{tab:DID3c_python}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \input{DID3c_cluster_python.tex}
+    \caption{Question 3c with clustered standard errors }
+    \label{tab:DID3c_clusterstd_python}
+\end{table}
+
+Table \ref{tab:DID3c_clusterstd_python} reports the coefficients and clustered-standard errors, estimating the difference-in-differences regression with added controls. Using this estimation, the coefficient can be interpreted as bycatch reduced by  -10074.05 in the firms that received the information about best practices to reduce bycatch compared to the firms that did not receive the information. The reduction in the bycatch in part c is smaller than in part a and part b.
+
+\newpage
+
+
+\subsection{Question 3 (d)}
+\begin{table}[ht]
+    \centering
+    \input{output3d_python.tex}
+    \caption{Question 3d with clustered standard errors }
+    \label{tab:output3d_python}
+\end{table}
+
+Table \ref{tab:output3d_python} reports the results from (a), (b), and (c) in a table with standard errors calculated using clustered standard errors at the firm level. The coefficient of the interaction term treatment*post is our coefficient of interest. In part a (column 3a), the coefficient can be interpreted as the bycatch reduced by (138001.81 - 9591.35 =128,410) in the firms which received the program as compared to the programs that did not receive the program. In part 3b, the bycatch reduced by -85470.13 as the effect of the program. In part 3b, we add controls to estimation 3b, and the bycatch reduced to -10074.05 as the effect of the program.
+
+\newpage
+
+\section{STATA}
+
+\subsection{Question 1 (a)}
+\begin{table}[ht]
+    \centering
+    \input{q1a_cluster_stata.tex}
+    \caption{Question 3d with clustered standard errors }
+    \label{tab:q1a_cluster_stata}
+\end{table}
+
+\subsection{Question 1 (b)}
+\begin{table}[ht]
+    \centering
+    \input{q1b_cluster_stata.tex}
+    \caption{Question 3d with clustered standard errors }
+    \label{tab:q1b_cluster_stata}
+\end{table}
+
+\newpage
+
+\subsection{Question 1 (c)}
+\begin{table}[ht]
+    \centering
+    \input{q1c_stata.tex}
+    \caption{Question 3d with clustered standard errors }
+    \label{tab:q1c_stata}
+\end{table}
+Column (1) of table \ref{tab:q1c_stata} are the estimates from part 1(a) and column (2) are the estimates from part 1(b). The coefficient of the interaction term treatment*post is our coefficient of interest. In part a (column 1), the coefficient can be interpreted as the bycatch is reduced by 8320 in the firms which received the program as compared to the programs that did not receive the program. Using the within transformation in part b we are controlling for fixed effects. In part b, the bycatch is reduced by 8149 where received the information as compared to the firms that did not receive the information.
+\end{document}
