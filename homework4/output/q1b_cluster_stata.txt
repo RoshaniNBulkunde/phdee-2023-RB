@@ -1,7 +1,7 @@
 		(1)
 VARIABLES	LABELS	Demeaned Bycatch
 		
-demeaned_treatment	Demeaned Treatment	-8,149***
+demeaned_treatment	Demeaned post*treated	-8,149***
 		(2,489)
 o.demeaned_firmsize	Demeaned Firmsize = o,	-
 		

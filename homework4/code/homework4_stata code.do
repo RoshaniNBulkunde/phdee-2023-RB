@@ -40,7 +40,7 @@ gen treatment=post*treated //The firmis treated if treated=1 and post=1
 *----- Labeling variables
 la var firm "Firm"
 la var month "Month"
-la var treatment "Treatment"
+la var treatment "post*treated"
 la var firmsize "Firmsize"
 la var shrimp "Shrimp (Pounds)"
 la var salmon "Salmon (Pounds)"
@@ -55,22 +55,12 @@ firm31 firm32 firm33 firm34 firm35 firm36 firm37 firm38 firm39 firm40 firm41 fir
 firm47 firm48 firm49 firm50 month treatment firmsize shrimp salmon, vce(cluster firm) */
 
 *********** With Cluster Standard Errors***************
-* Method 1
-regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
-outreg2 using q1a_cluster_stata.tex, label tex(fragment) replace
 
 * Method 2
-eststo reg1a: quietly regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
+regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
+*outreg2 using q1a_cluster_stata.tex, label tex(fragment) keep(treatment firmsize shrimp salmon) replace
 	
-esttab reg1a using q1a_stata.tex, replace b(%3.2f) se(%3.2f) sfmt(%12.0fc) ///
-fragment booktabs  ///
-keep(treatment firmsize shrimp salmon)  ///
-mtitles(DID estimates)  ///
-varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)")
-
-
-
-
+outreg2 using q1a_cluster_stata.tex, label tex(fragment) drop(i.firm month) replace
 
 /************************************************************************
 *        Question 1 b
@@ -102,7 +92,7 @@ generate demeaned_salmon = salmon- salmon_mean
 regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon
 
 *----- Labeling variables
-la var demeaned_treatment "Demeaned Treatment"
+la var demeaned_treatment "Demeaned post*treated"
 la var demeaned_firmsize "Demeaned Firmsize"
 la var demeaned_shrimp "Demeaned Shrimp (Pounds)"
 la var demeaned_salmon "Demeaned Salmon (Pounds)"
@@ -123,15 +113,23 @@ Display the results of your estimates from (a) and (b) in the same table, report
 standard errors or confidence intervals as previously
 ***************************************************************************/
 
+regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)	
+outreg2 using q1c_stata.tex, label tex(fragment) drop(i.firm month) replace
+
+regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, vce(cluster firm)
+outreg2 using q1c_stata.tex, label tex(fragment) append
+
+
+/*
 eststo reg1:quietly regress bycatch i.firm month treatment firmsize shrimp salmon, vce(cluster firm)
 eststo reg2: quietly regress demeaned_bycatch demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon, vce(cluster firm)
 
-/*
+
 esttab reg1 reg2 using DID_stata.tex, replace b(%3.2f) se(%3.2f) sfmt(%12.0fc) ///
 fragment booktabs nostar unstack ///
 keep(treatment firmsize shrimp salmon demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon) ///
 varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)" bycatch "Bycatch" ///
-demeaned_treatment "Demeaned Treatment" demeaned_firmsize "Demeaned Firmsize" demeaned_shrimp "Demeaned Shrimp (Pounds)" demeaned_salmon "Demeaned Salmon (Pounds)") */
+demeaned_treatment "Demeaned Treatment" demeaned_firmsize "Demeaned Firmsize" demeaned_shrimp "Demeaned Shrimp (Pounds)" demeaned_salmon "Demeaned Salmon (Pounds)") 
 
 
 esttab reg1 reg2 using DID_stata.tex, replace ///
@@ -142,4 +140,4 @@ fragment booktabs nostar unstack ///
 keep(treatment firmsize shrimp salmon demeaned_treatment demeaned_firmsize demeaned_shrimp demeaned_salmon) ///
 varlabels(treatment "Treatment" firmsize "Firmsize" shrimp "Shrimp (Pounds)" salmon "Salmon (Pounds)" bycatch "Bycatch" ///
 demeaned_treatment "Demeaned Treatment" demeaned_firmsize "Demeaned Firmsize" demeaned_shrimp "Demeaned Shrimp (Pounds)" demeaned_salmon "Demeaned Salmon (Pounds)")
-
+*/
