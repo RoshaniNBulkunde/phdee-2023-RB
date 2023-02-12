@@ -28,3 +28,12 @@ os.chdir(datapath) # To change the current working directory to specified path
 
 ## Import kwh.csv data
 IvData = pd.read_csv('C:\\Users\\rosha\\Dropbox (GaTech)\\PhD-2023-Env2\\phdee-2023-RB\\homework5\\instrumentalvehicles.csv')
+
+##########################################################################################################################
+
+#****************************** Question 1 ***************************#
+
+## Direct method
+ols_q1 = sm.OLS(IvData['price'],sm.add_constant(IvData.drop(['price', 'weight', 'height', 'length'],axis = 1))).fit()
+olsbeta_q1 = ols_q1.params
+
