@@ -40,3 +40,6 @@ outreg2 using q1aIV_stata.tex, label tex(fragment) replace
 *=============== Question 2=========================*
 /*2. Use weakivtest to estimate the Montiel-Olea-Pflueger effective F-statistic. What is the 5% critical
 value, the F-statistic, and conclusion? */
+*ssc install weakivtest
+*ssc install avar
+weakivtest, level(0.05)

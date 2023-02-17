@@ -18,6 +18,8 @@ import seaborn as sns
 import statsmodels.api as sm
 import math
 import array as arr
+from statsmodels.sandbox.regression import gmm
+from linearmodels import IV2SLS, IVGMM, IVGMMCUE, IVLIML ##Need to run this first "pip install linearmodels"
 
 # Set working directories and seed
 
@@ -182,3 +184,41 @@ Col4.index = rownames
 
 os.chdir(outputpath)
 Col4.to_latex('output3_python.tex')
+
+######################################################################################################
+
+#****************************** Question 4 ***************************#
+IvData["const"] = 1 ## Add constant
+Xvar = IvData[["const", "car"]] #Exogenous variable
+
+
+ivmod = IVGMM(IvData.price, Xvar, IvData.mpg, IvData[["weight"]]) ##Fit in the GMM model
+res_gmm = ivmod.fit()
+
+print(res_gmm)
+
+## Extract the data
+beta_gmm = res_gmm.params # Save the coeffcients from the second stage
+std_gmm = res_gmm.std_errors ## Extract the standard errors
+nobsgmm = res_gmm.nobs ## Number of observations
+
+### Format Standard Errors
+std_gmm = pd.Series(np.round(std_gmm,2)) # Rounds to two decimal places and puts into a Series
+
+### Format estimates and append observations
+beta_gmm = pd.Series(np.round(beta_gmm,2))
+std_gmm  = std_gmm.map('({:.2f})'.format)
+
+### Stack estimates over Standard Errors
+cold= pd.concat([beta_gmm, std_gmm],axis = 1).stack()
+cold = pd.Series(np.append(cold, nobsgmm))
+
+rownames1 = pd.concat([pd.Series(['Constant', 'Fuel Efficiency (mpg)', 'Car', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack()
+
+colnames1 = pd.Series(['(4a)'])
+cold.columns = colnames1
+
+cold.index = rownames1
+
+os.chdir(outputpath)
+cold.to_latex('IVGMM_python.tex')
