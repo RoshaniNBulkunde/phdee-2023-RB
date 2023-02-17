@@ -51,9 +51,9 @@ print(FirstS_2a.summary())
 
 ## Extracting the data needto build the table
 beta_FS_2a = FirstS_2a.params # Save the coeffcients from the first stage
-##FirstS_2a.fvalue #For f-statistics
-fres = FirstS_2a.f_test("weight=0") # F-statistic for the excluded instrument
-fstat_2a = fres.fvalue
+fstat_2a = FirstS_2a.fvalue #For First stage f-statistics
+##fres = FirstS_2a.f_test("weight=0") # F-statistic for the excluded instrument
+##fstat_2a = fres.fvalue
 
 ## Save the fitted values from first stage as mpg_hat
 IvData2a['mpghat'] = beta_FS_2a[0] + (beta_FS_2a[1]* IvData2a['weight'])+ (beta_FS_2a[2]*IvData2a['car'])
@@ -75,6 +75,7 @@ std_SS2a = pd.Series(np.round(std_SS2a,2)) # Rounds to two decimal places and pu
 beta_SS_2a = pd.Series(np.round(beta_SS_2a,2))
 # beta_SS_2a = pd.Series(np.append(np.round(beta_SS_2a,2), nobs2a))
 std_SS2a  = std_SS2a.map('({:.2f})'.format)
+fstat_2a = np.round(fstat_2a, 2)
 
 
 ### Stack estimates over Standard Errors
@@ -95,9 +96,8 @@ IvData2b = IvData[["price", "mpg", "height", "length", "weight", "weight_sq", "c
 FirstS_2b = sm.OLS(IvData2b['mpg'],sm.add_constant(IvData2b.drop(['price', 'mpg', 'height', 'length', 'weight'],axis = 1))).fit()
 print(FirstS_2b.summary())
 beta_FS_2b = FirstS_2b.params # Save the coeffcients from the first stage
+fstat_2b = FirstS_2b.fvalue #For First stage f-statistics
 
-fres = FirstS_2b.f_test("weight_sq=0") # F-statistic for the excluded instrument
-fstat_2b = fres.fvalue
 
 ## Save the fitted values from first stage as mpg_hat
 IvData2b['mpghat'] = beta_FS_2b[0] + (beta_FS_2b[1]* IvData2b['weight_sq'])+ (beta_FS_2b[2]*IvData2b['car'])
@@ -119,7 +119,7 @@ std_SS2b = pd.Series(np.round(std_SS2b,2)) # Rounds to two decimal places and pu
 beta_SS_2b = pd.Series(np.round(beta_SS_2b,2))
 # beta_SS_2a = pd.Series(np.append(np.round(beta_SS_2a,2), nobs2a))
 std_SS2b  = std_SS2b.map('({:.2f})'.format)
-
+fstat_2b = np.round(fstat_2b, 2)
 
 ### Stack estimates over Standard Errors
 colb= pd.concat([beta_SS_2b, std_SS2b],axis = 1).stack()
@@ -135,8 +135,7 @@ FirstS_2c = sm.OLS(IvData2c['mpg'],sm.add_constant(IvData2c.drop(['price', 'mpg'
 print(FirstS_2c.summary())
 beta_FS_2c = FirstS_2c.params # Save the coeffcients from the first stage
 
-fres = FirstS_2c.f_test("height=0") # F-statistic for the excluded instrument
-fstat_2c = fres.fvalue
+fstat_2c = FirstS_2c.fvalue #For First stage f-statistics
 
 
 ## Save the fitted values from first stage as mpg_hat
@@ -159,7 +158,7 @@ std_SS2c = pd.Series(np.round(std_SS2c,2)) # Rounds to two decimal places and pu
 beta_SS_2c = pd.Series(np.round(beta_SS_2c,2))
 # beta_SS_2a = pd.Series(np.append(np.round(beta_SS_2a,2), nobs2a))
 std_SS2c  = std_SS2c.map('({:.2f})'.format)
-
+fstat_2c = np.round(fstat_2c, 2)
 
 ### Stack estimates over Standard Errors
 colc= pd.concat([beta_SS_2c, std_SS2c],axis = 1).stack()
@@ -173,7 +172,7 @@ colc=pd.DataFrame(colc)
 
 Col4 = pd.concat([cola,colb,colc], axis = 1)
 
-rownames = pd.concat([pd.Series(['Constant', 'Fuel Efficiency (mpg)', 'Car', 'Observations', 'F-statistics']),pd.Series([' ',' ',' '])],axis = 1).stack()
+rownames = pd.concat([pd.Series(['Constant', 'Fuel Efficiency (mpg)', 'Car', 'Observations', 'First Stage F-statistics']),pd.Series([' ',' ',' '])],axis = 1).stack()
 rownames = rownames.reset_index()
 rownames =rownames[0]
 
@@ -213,7 +212,7 @@ std_gmm  = std_gmm.map('({:.2f})'.format)
 cold= pd.concat([beta_gmm, std_gmm],axis = 1).stack()
 cold = pd.Series(np.append(cold, nobsgmm))
 
-rownames1 = pd.concat([pd.Series(['Constant', 'Fuel Efficiency (mpg)', 'Car', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack()
+rownames1 = pd.concat([pd.Series(['Constant', 'Car', 'Fuel Efficiency (mpg)', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack()
 
 colnames1 = pd.Series(['(4a)'])
 cold.columns = colnames1
