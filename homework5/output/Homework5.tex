@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+    citecolor=black,
+}
+\usepackage{natbib}
+
+\usepackage{titlesec}
+
+\title{Homework 5}
+\author{Roshani Bulkunde}
+\date{February 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Python}
+
+\subsection{Question 1}
+After running the ordinary-least-squares regression of price on mpg, the car indicator variable, and a constant, the coefficient on miles per gallon is -22.21. That means, holding other variables constant, the hedonic price will decrease by 22.21 with an additional mile per gallon fuel efficiency.
+ 
+
+\subsection{Question 2}
+I am concerned about omitted variable bias kind of endogeneity when estimating the coefficient on mpg. Fuel efficiency (mpg) can be endogenous if it is correlated with the error term, and in this case when we are excluding the variables that is correlated with fuel efficiency (mpg). Fuel efficiency of the car also correlated with weight of the car or height of the car. If we are excluding these information, that means, fuel efficiency is correlated with error term, and hence it is endogenous.
+
+
+\subsection{Question 3 }
+\begin{table}[ht]
+    \centering
+    \input{output3_python.tex}
+    \caption{Two-stage-least-squares estimation}
+    \label{tab:output3_python}
+\end{table}
+
+
+
+Table \ref{tab:output3_python} reports the coefficient estimates and standard errors in the parenthesis, and the first-stage F-statistic for the excluded instrument. 
+
+\subsubsection{Question 3 (a)}
+Column (3a) of table \ref{tab:output3_python} reports the estimated second-stage coefficients, standard errors in the parenthesis, and the first-stage F-statistic for weight as the excluded instrument.
+
+\subsubsection{Question 3 (b)}
+Column (3b) of table \ref{tab:output3_python} reports the estimated second-stage coefficients, standard errors in the parenthesis, and the first-stage F-statistic for $weight^2$ as the excluded instrument.
+
+\subsubsection{Question 3 (c)}
+Column (3c) of table \ref{tab:output3_python} reports the estimated second-stage coefficients, standard errors in the parenthesis, and the first-stage F-statistic for length as the excluded instrument.
+
+\subsubsection{Question 3 (d)}
+An exclusion restriction is considered valid as long as the instrumental variables do not directly affect the dependent variables in an equation and must affect the outcome 
+only through the variable of interest in a direct chain. The instrument variable must be as good as randomly assigned.
+
+In part a, we are using weight as the excluded instrument. According to the definition of the validation of exclusion restrictions, weight must be as good as randomly assigned and it should affect price only through Fuel efficiency. For me, weight seems to be the valid instruments because it is not the the general case that more heavy vehicles are always expensive. Price of the car depends on other factors, for example, car model, technology. But weight is correlated with fuel efficiency, hence weight is affecting price only through fuel efficiency. The F-statistics from the first stage is 256.8. So, weight as an instrument for fuel efficiency seems reasonable to me.
+
+In part b, $weight^2$ is seems reasonable because weight is good instrument from above description.
+
+In part c, we are using height as the excluded instrument. The F-statistics from the first stage is 203.66. Length of the vehicle do not directly affect price of the vehicle. But length of the vehicle correlates with the fuel efficiency and affect price through the fuel efficiency. Length seems reasonable instrument to me.
+
+\subsubsection{Question 3 (e)}
+In table \ref{tab:output3_python}, column (3a) reports the second stage coefficients when we are using weight as the instrument for fuel efficiency, column (3b) when we are using $weight^2$ as the instrument for fuel efficiency, and column (3c) when we are using length as the instrument.
+
+The coefficient on mpg are very close in part a and part b. In part a, holding other variables constant, the hedonic price will increase by 150.43 with an additional mile per gallon fuel efficiency. In part b, holding other variables constant, the hedonic price will increase by 157.06 with an additional mile per gallon fuel efficiency. But in part c, the coefficient on mpg is very large, which is 10165.74, and the constant is -264024.18. That means when mpg increase by one mile per gallon, the price will decrease by approximately 253859, which is contrast to part a and b.
+
+\newpage
+\subsection{Question 4 }
+\begin{table}[ht]
+    \centering
+    \input{IVGMM_python.tex}
+    \caption{The IV estimate using GMM with weight as the excluded instrument}
+    \label{tab:IVGMM_python}
+\end{table}
+Table \ref{tab:IVGMM_python} reports the estimated second-stage coefficients, standard errors in the parenthesis when weight as the excluded instrument.
+The weighted matrix used in the gmm model accounts for the differences in the standard errors. By default, a weight matrix assumes the errors are independent but not identically distributed.
+
+\section{STATA}
+\subsection{Question 1 }
+
+\begin{table}[ht]
+    \centering
+    \input{q1aIV_stata.tex}
+    \caption{ivregress liml}
+    \label{tab:q1aIV_stata}
+\end{table}
+
+\subsection{Question 2 }
+The Montiel-Olea-Pflueger effective F-statistic at 0.05 level is 78.362. 5\% critical value for both Two-Stage Least Squares (TSLS) and Limited Information Maximum Likelihood (LIML) is 37.418. Since the Montiel-Olea-Pflueger effective F-statistic at 0.05 level is 78.362 which is high, I conclude that "weight" is strong instrument for fuel efficiency (mpg).
+
+\end{document}

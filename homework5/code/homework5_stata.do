@@ -42,4 +42,4 @@ outreg2 using q1aIV_stata.tex, label tex(fragment) replace
 value, the F-statistic, and conclusion? */
 *ssc install weakivtest
 *ssc install avar
-weakivtest, level(0.05)
+weakivtest, level(0.05)  // weakivtest as a postestimation command for ivregress
