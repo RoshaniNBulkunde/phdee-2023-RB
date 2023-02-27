@@ -72,7 +72,7 @@ stderr3 = mod.bse ## Extract the standard errors
 nobs3 = mod.nobs ## Number of observations
 
 ## Save the fitted values from first stage as mpg_hat
-#IvData3['mpghat'] = beta_FS3[0] + (beta_FS3[1]* IvData3['treatment'])+ (beta_FS3[2]*IvData3['length'])
+IvData3['mpghat'] = beta_FS3[0] + (beta_FS3[1]* IvData3['treatment'])+ (beta_FS3[2]*IvData3['length'])
 
 IvData31 = IvData3.loc[(IvData3['treatment'] == 0)]
 IvData31['mpghat'] = beta_FS3[0] +  (beta_FS3[2]*IvData31['length'])
@@ -91,6 +91,19 @@ plt.xlabel("Length")
 plt.ylabel("Fuel efficiency (mpg")
 
 plt.savefig('discontinuity_3.pdf',format='pdf')
+
+#*************************************************************************************************
+plt.figure(figsize=(12, 8))
+plt.scatter(IvData3['length'],IvData3['mpghat'], facecolors='none', edgecolors='r')
+plt.axvline(x=threshold, color='b') #a line at the RD cutoff
+plt.plot(IvData31['length'], IvData31['mpghat'], color='blue')
+plt.plot(IvData32['length'], IvData32['mpghat'], color='blue')
+plt.xlabel("Length")
+plt.ylabel("Fuel efficiency (mpg")
+
+plt.savefig('discontinuity_31.pdf',format='pdf')
+
+#--------------------------------
 
 ## Build output table
 ### Reorder output (I probably should figure out a way to do this all at once)
@@ -120,13 +133,7 @@ print(col0)
 
 col0.to_latex('RD3_python.tex')
 
-#*************************************************************************************************
-#plt.figure(figsize=(12, 8))
-#plt.scatter(IvData3['length'],IvData3['mpghat'], facecolors='none', edgecolors='r')
 
-#plt.axvline(x=threshold, color='b') #a line at the RD cutoff
-#plt.plot(IvData31['length'], IvData31['mpghat'], color='blue')
-#plt.plot(IvData32['length'], IvData32['mpghat'], color='blue')
 
 ##############################################################################################
 #****************************** Question 4  ***************************#
@@ -152,7 +159,7 @@ IvData42 = IvData4.loc[(IvData4['treatment'] == 1)]
 IvData42['mpghat'] = beta_FS4[0] + beta_FS4[1] + (beta_FS4[2]*IvData42['length_sq'])
 
 
-IvData4['mpghat'] = beta_FS4[0] + (beta_FS4[1]* IvData4['treatment'])+ (beta_FS4[2]*IvData4['length'])
+IvData4['mpghat'] = beta_FS4[0] + (beta_FS4[1]* IvData4['treatment'])+ (beta_FS4[2]*IvData4['length_sq'])
 
 ## Plot the resulting polynomial over a scatterplot
 plt.figure(figsize=(12, 8))
@@ -165,6 +172,9 @@ plt.ylabel("Fuel efficiency (mpg")
 
 
 plt.savefig('discontinuity_4.pdf',format='pdf')
+
+
+#------------------------------------
 
 ## Build output table
 ### Reorder output (I probably should figure out a way to do this all at once)
