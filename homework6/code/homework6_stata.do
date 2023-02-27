@@ -27,7 +27,10 @@ la var weight "Weight (Pounds)"
 la var height "Height (Inches)"
 la var length "Length (Inches)"
 
- gen length5= length* length* length* length* length
+ scalar t4 = 225*225*225*225
+
+gen length4= length* length* length* length
+
 
 /*. Using the discontinuity as an instrument for miles per gallon, estimate the impact of mpg on the
 vehicle's sale price. Use the rdrobust command in Stata. Use whatever degree polynomial you see
@@ -36,7 +39,13 @@ control for the class of the vehicle by including carv as in Homework 6. */
 
 rdrobust mpg length, c(225) bwselect(mserd)
 
-** rdplot with QS partitioning and mimicking variance choice
+gen treatment = (length4>=t4)
+*#
+ivregress 2sls price car ( mpg= i.treatment), vce(robust)
+outreg2 using Rd_2sls_stata.tex, label tex(fragment) replace
+
+**Generate and report a plot of the results using rdplot.
 **************************************************************************
-rdplot mpg length, c(225) binselect(qspr) 
+rdplot mpg length, c(225) binselect(qspr) cov(car)
+graph export rdplot_stata.pdf, replace
 		
