@@ -26,3 +26,17 @@ la var mpg "Fuel Efficiency (mpg)"
 la var weight "Weight (Pounds)"
 la var height "Height (Inches)"
 la var length "Length (Inches)"
+
+ gen length5= length* length* length* length* length
+
+/*. Using the discontinuity as an instrument for miles per gallon, estimate the impact of mpg on the
+vehicle's sale price. Use the rdrobust command in Stata. Use whatever degree polynomial you see
+fit for the first stage. Use the CCT optimal bandwidth: bwselect(mserd). In the hedonic regression,
+control for the class of the vehicle by including carv as in Homework 6. */
+
+rdrobust mpg length, c(225) bwselect(mserd)
+
+** rdplot with QS partitioning and mimicking variance choice
+**************************************************************************
+rdplot mpg length, c(225) binselect(qspr) 
+		

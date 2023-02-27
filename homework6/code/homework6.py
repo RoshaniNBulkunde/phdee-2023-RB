@@ -65,6 +65,8 @@ model = rdd.rdd(IvData3, 'length', 'mpg', cut=threshold)
 mod=model.fit()
 print(mod.summary())
 
+
+## Results
 beta_FS3 = mod.params # Save the coeffcients from the first stage
 stderr3 = mod.bse ## Extract the standard errors
 nobs3 = mod.nobs ## Number of observations
@@ -102,28 +104,21 @@ rownames3 = pd.concat([pd.Series(['Treated', 'length', 'Constant', 'Observations
 colnames3 = pd.Series(['Coefficients'])
 
 
-### Stack estimates over Standard Errors
-cola= pd.concat([beta_FS3, stderr3],axis = 1).stack()
-cola = pd.Series(np.append(cola, nobs3))
+## Format means and std devs to display to two decimal places
+beta_FS3 = beta_FS3.map('{:.2f}'.format)
+stderr3 = stderr3.map('({:.2f})'.format)
 
-### Format Standard Errors
-stderr3 = pd.Series(np.round(stderr3,2)) # Rounds to two decimal places and puts into a Series
-
-### Format estimates and append observations
-beta_FS3 = pd.Series(np.append(np.round(beta_FS3,2), nobs3))
-stderr3  = stderr3 .map('({:.2f})'.format)
-
-### Stack estimates over Standard Errors
-col3a = pd.concat([beta_FS3,stderr3],axis = 1).stack()
-o3 = np.array([])
+## Align std deviations under means and add observations
+col0 = pd.concat([beta_FS3, stderr3],axis = 1).stack()
+col0 = pd.concat([col0, pd.Series(nobs3)], axis=0)
 
 ### Output
-col3a.index = rownames3
-col3a.columns = colnames3
+col0.index = rownames3
+col0 .columns = colnames3
 
-print(col3a)
+print(col0)
 
-col3a.to_latex('RD3_python.tex')
+col0.to_latex('RD3_python.tex')
 
 #*************************************************************************************************
 #plt.figure(figsize=(12, 8))
@@ -145,7 +140,10 @@ model = rdd.rdd(IvData4, 'length_sq', 'mpg', cut=threshold*threshold)
 mod=model.fit()
 print(mod.summary())
 
+## Results
 beta_FS4 = mod.params # Save the coeffcients from the first stage
+stderr4 = mod.bse ## Extract the standard errors
+nobs4 = mod.nobs ## Number of observations
 
 IvData41 = IvData4.loc[(IvData4['treatment'] == 0)]
 IvData41['mpghat'] = beta_FS4[0] +  (beta_FS4[2]*IvData41['length_sq'])
@@ -168,6 +166,34 @@ plt.ylabel("Fuel efficiency (mpg")
 
 plt.savefig('discontinuity_4.pdf',format='pdf')
 
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order4 = np.array([1,2,0])
+beta_FS4 = beta_FS4[order4]
+stderr4 = stderr4[order4]
+
+
+### Row and column names
+rownames4 = pd.concat([pd.Series(['Treated', 'length', 'Constant', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack()
+colnames4 = pd.Series(['Coefficients'])
+
+
+## Format means and std devs to display to two decimal places
+beta_FS4 = beta_FS4.map('{:.2f}'.format)
+stderr4 = stderr4.map('({:.2f})'.format)
+
+## Align std deviations under means and add observations
+col1 = pd.concat([beta_FS4, stderr4],axis = 1).stack()
+col1 = pd.concat([col1, pd.Series(nobs4)], axis=0)
+
+### Output
+col1.index = rownames4
+col1 .columns = colnames4
+
+print(col1)
+
+col1.to_latex('RD4_python.tex')
+
 
 
 ##############################################################################################
@@ -184,7 +210,11 @@ model = rdd.rdd(IvData5, 'length_fv', 'mpg', cut=threshold5)
 mod=model.fit()
 print(mod.summary())
 
+
+## Results
 beta_FS5 = mod.params # Save the coeffcients from the first stage
+stderr5 = mod.bse ## Extract the standard errors
+nobs5 = mod.nobs ## Number of observations
 
 ## Save the fitted values from first stage as mpg_hat
 IvData5['mpghat'] = beta_FS5[0] + (beta_FS5[1]* IvData5['treatment'])+ (beta_FS5[2]*IvData5['length_fv'])
@@ -207,6 +237,36 @@ plt.ylabel("Fuel efficiency (mpg")
 
 
 plt.savefig('discontinuity_5.pdf',format='pdf')
+
+
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order5 = np.array([1,2,0])
+beta_FS5 = beta_FS5[order5]
+stderr5 = stderr5[order5]
+
+
+### Row and column names
+rownames5 = pd.concat([pd.Series(['Treated', 'length', 'Constant', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack()
+colnames5 = pd.Series(['Coefficients'])
+
+
+## Format means and std devs to display to two decimal places
+beta_FS5 = beta_FS5.map('{:.2f}'.format)
+stderr5 = stderr5.map('({:.2f})'.format)
+
+## Align std deviations under means and add observations
+col2 = pd.concat([beta_FS5, stderr5],axis = 1).stack()
+col2 = pd.concat([col2, pd.Series(nobs5)], axis=0)
+
+### Output
+col2.index = rownames5
+col2.columns = colnames5
+
+print(col2)
+
+col2.to_latex('RD5_python.tex')
+
 
 
 ##############################################################################################
@@ -237,6 +297,34 @@ print(SecondS_6.summary())
 beta_SS6 = SecondS_6.params # Save the coeffcients from the second stage
 std_SS6 = SecondS_6.bse ## Extract the standard errors
 nobs6 = SecondS_6.nobs ## Number of observations
+
+## Build output table
+### Reorder output (I probably should figure out a way to do this all at once)
+order6 = np.array([1,2,0])
+beta_SS6 = beta_SS6[order6]
+stderr6 = stderr6[order6]
+
+
+### Row and column names
+rownames6 = pd.concat([pd.Series(['Fuel Efficiency (mpg)', 'Car', 'Constant', 'Observations']),pd.Series([' ',' ',' '])],axis = 1).stack()
+colnames6 = pd.Series(['Coefficients'])
+
+
+## Format means and std devs to display to two decimal places
+beta_SS6 = beta_SS6.map('{:.2f}'.format)
+std_SS6 = std_SS6.map('({:.2f})'.format)
+
+## Align std deviations under means and add observations
+col3 = pd.concat([beta_SS6, std_SS6],axis = 1).stack()
+col3 = pd.concat([col3, pd.Series(nobs6)], axis=0)
+
+### Output
+col3.index = rownames6
+col3.columns = colnames6
+
+print(col3)
+
+col3.to_latex('RD6_python.tex')
 
 
 
