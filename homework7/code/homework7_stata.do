@@ -38,7 +38,7 @@ encode zone, gen(zone1)
 *------------- Question 1 (a)
 ** Estimate the equation
 reg lnmw i.zone1 i.month i.dow i.hour treatment temp pcp, vce(robust)
-outreg2 using output1a_stata.tex, label tex(fragment) replace
+outreg2 using output1a_stata.tex, label keep(treatment temp pcp) tex(fragment) replace
 
 
 *------------- Question 1 (b)
@@ -51,7 +51,7 @@ drop if month==1 | month==2
 
 ** Estimate the equation
 teffects nnmatch (lnmw temp pcp) (treatment), ematch(zone1 month dow hod) vce(robust) osample(overlap1)
-
+outreg2 using output1b_stata.tex, label tex(fragment) replace
 /*================================================================================
                           Question 2
 ==================================================================================*/
@@ -67,8 +67,12 @@ encode zone, gen(zone1)
 ** Generate hour of the day variable
 g hod = hh(time)
 
+**binary treatment variable that is equal to one for all time eriods March 1, 2020 and after
+gen treatment = 0
+replace treatment = 1  if (month>=3 & day>=1 & year>=2020 )
+
 ** Estimate the equation
-reg lnmw i.zone1 i.month i.dow i.hour i.year treatment temp pcp, vce(robust)
+reg lnmw i.zone1 i.month i.dow i.hod i.year treatment temp pcp, vce(robust)
 
 /*================================================================================
                           Question 3

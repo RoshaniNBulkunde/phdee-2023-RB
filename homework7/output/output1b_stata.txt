@@ -1,0 +1,9 @@
+		(1)
+VARIABLES	LABELS	lnmw
+		
+r1vs0.treatment		-0.0703***
+		(0.00100)
+		
+Observations		102,800
+Standard errors in parentheses		
+*** p<0.01, ** p<0.05, * p<0.1		
