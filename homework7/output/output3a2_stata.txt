@@ -1,0 +1,12 @@
+		(1)
+VARIABLES	LABELS	diff_lgmw
+		
+treatment	treatment	-17,818***
+		(76.46)
+Constant	Constant	-2,610***
+		(31.74)
+		
+Observations		17,568
+R-squared		0.421
+Robust standard errors in parentheses		
+*** p<0.01, ** p<0.05, * p<0.1		

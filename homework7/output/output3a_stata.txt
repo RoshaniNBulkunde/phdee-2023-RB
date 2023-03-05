@@ -1,0 +1,9 @@
+		(1)
+VARIABLES	LABELS	lnmw
+		
+r1vs0.y2020		-0.0436***
+		(0.00105)
+		
+Observations		35,084
+Standard errors in parentheses		
+*** p<0.01, ** p<0.05, * p<0.1		

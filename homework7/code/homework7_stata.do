@@ -84,13 +84,15 @@ gen y2020 = (year==2020)
 keep if year==2020 | year==2019
 
 ** Estimate the equation
-teffects nnmatch (lnmw temp pcp) (y2020), ematch(zone1 month dow hod) vce(robust) osample(overlap2) gen(logmw_hat) //logmw_hat equal to the matched electricity consumption
+teffects nnmatch (lnmw temp pcp) (y2020), ematch(zone1 dow hod month) vce(robust) osample(overlap2) gen(logmw_hat) //logmw_hat equal to the matched electricity consumption
+outreg2 using output3a_stata.tex, label tex(fragment) replace
 
+keep if year==2020
 **generate a variable for difference between log electricity consumption and matched log electricity consumption
 gen diff_lgmw = lnmw - logmw_hat1
 
 reg diff_lgmw treatment, vce(robust)
-
+outreg2 using output3a2_stata.tex, label tex(fragment) replace
 
 
 

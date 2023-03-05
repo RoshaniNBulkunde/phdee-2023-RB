@@ -1,0 +1,91 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\usepackage{hyperref}
+\hypersetup{
+colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+    citecolor=black,
+}
+\usepackage{natbib}
+
+\usepackage{titlesec}
+
+\title{Homework 7}
+\author{Roshani Bulkunde}
+\date{March 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{STATA}
+\subsection{Question 1 }
+\subsubsection{Question 1 (a) }
+\begin{table}[ht]
+    \centering
+    \input{output1a_stata}
+    \caption{Estimation results of equation 1: the coefficient estimate and heteroskedasticity-robust standard error}
+    \label{tab:output1a_stata}
+\end{table}
+The coefficient on $treatment_t$ is -.065 and heteroskedasticity-robust standard error are .001359 with p-value 0 at 1\textit{\%} significance level. That means, electricity consumption decreased by 6.5\textit{\%} after period March 1, 2020. 
+
+\newpage
+
+\subsubsection{Question 1 (b) }
+\begin{table}[ht]
+    \centering
+    \input{output1b_stata}
+    \caption{Estimates of the treatment effect on $log(MW_{i,t})$ using the Mahalanobis distance norm and one nearest neighbor. Match on the continuous variables temp and pcp, and match exactly on zone, day of week, hour of day, and month of year}
+    \label{tab:output1b_stata}
+\end{table}
+Estimates of the treatment effect on $log(MW_{i,t})$ using the Mahalanobis distance norm and one nearest neighbor is -0.0703 with heteroskedasticity-robust standard error 0.001. That means, electricity consumption decreased by 7\textit{\%} after period March 1, 2020. 
+
+
+
+\subsubsection{Question 1 (c)}
+In question 1(a), the control group, i.e., the observation before the period March 1, 2020 may not be the true counterfactual for the treatment group, i.e., the observation after the period March 1, 2020. Because there might be other time-variant factors that needs to be considered in order to avoid endogeinity problem.
+
+In question 1(b), we are not excluding the exact matching on year. As per my intuition, that might be the problem in selecting the nearest neighbour to the observations in treatment group.
+
+\subsection{Question 2 }
+\subsubsection{Question 2 (a) }
+The coefficient on $treatment_t$ is .025 and heteroskedasticity-robust standard error are .0027.
+
+\subsubsection{Question 2 (b) }
+In equation 2, we are adding the indicator variables for zone, month of year, day of week, and hour of day, and an indicator for year of sample. That might solve the problem of selecting the nearest neighbour counterfactual observations to the observations in treatment group.
+
+\subsection{Question 3 }
+\subsubsection{Question 3 (a) }
+\begin{table}[ht]
+    \centering
+    \input{output3a_stata}
+    \caption{Average treatment effect: the coefficient estimate and heteroskedasticity-robust standard error}
+    \label{tab:output3a_stata}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \input{output3a2_stata}
+    \caption{Estimation of equation 3 using 2020 data: the coefficient estimate and heteroskedasticity-robust standard error}
+    \label{tab:output3a2_stata}
+\end{table}
+
+Table \ref{tab:output3a_stata} use command teffects nnmatch and match electricity consumption in 2020 to electricity consumption in 2019 using the most similar hour as defined by the Mahalanobis distance norm. Table \ref{tab:output3a_stata} estimates of the treatment effect on $log(MW_{i,t})$, the coefficient on $treatment_t$ is -0.0436 and heteroskedasticity-robust standard error are .00105.
+
+Table \ref{tab:output3a_stata} reports the coefficient estimate on $treatment_t$ and heteroskedasticity-robust standard error using 2020 data. The electricity consumption is decreased by -17818.29 magawat hours after the period March 1, 2020 as compared to the previous preiod March 1, 2020.
+
+\newpage
+\subsubsection{Question 3 (b) }
+The heteroskedasticity-robust standard errors on the coefficient are 76.46, which is very large. I might not trust the standard errors because the outcome variable was the difference between $Y_{i,t} = log(MW_{i,t})$ and  ${Y_{i,t}}^{^}$ the matched log electricity consumption (logmw hat) and that makes these standard errors large.
+
+\end{document}
+
