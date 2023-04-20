@@ -30,15 +30,40 @@ twoway connected mean_recyclingrate_nyc mean_recyclingrate_control year, legend(
 
 graph export "hw8_q1parallel.pdf", replace
 
+*--------------
+bys year: egen mean_recyclingrate_nj=mean(recyclingrate) if nj == 1
+bys year: egen mean_recyclingrate_ma=mean(recyclingrate) if ma == 1
+
+twoway connected mean_recyclingrate_nyc mean_recyclingrate_nj  mean_recyclingrate_ma year, legend(label (1 "New York City") label (2 "New Jersey") label (3 "Massachusetts")) ytitle(Fraction of waste recycled) xline(2001.5 2004.5) xlabel(1995(1)2010, labsize(vsmall)) ylabel(0(0.05).4, labsize(vsmall)) 
+
+graph export "hw8_q1parallel_2.pdf", replace
+
 **********************************************************************************************************************************
 
 
 
 /*---------------------      Question 2. -------------------------------
- Estimate the effect of the pause on the recycling rate in NYC using a TWFE regression and the data from 1997-2004. Cluster your standard errors at the region level. Report the average treatment effect estimate and the standard error. */
-xtset id year
-xtreg recyclingrate nyc i.year, fe vce(cluster region)
+Estimate the effect of the pause on the recycling rate in NYC using a TWFE regression and the data from 1997-2004. Cluster your standard errors at the region level. Report the average treatment effect estimate and the standard error. */
 
+*-------Data only for 1997 to2004
+preserve
+
+	drop if year> 2004
+
+	*--- Create region id variable
+	encode region, generate(regionid) label(region)
+
+	*----Set panel setting for dataset
+	xtset regionid year
+
+	*---Twoway fixed effect
+	gen treat = 0
+	replace treat = 1 if year>=2002
+	lab var treat "Treated"
+
+	xtreg recyclingrate nyc##treat i.year,fe vce(cluster regionid)
+
+restore
 **********************************************************************************************************************************
 
 
@@ -50,7 +75,7 @@ xtreg recyclingrate nyc i.year, fe vce(cluster region)
                         unstandardized graph_export([stub] , type) mattitles
                         graph g1on g1_opt(string) g2_opt(string) msize() */
 
-sdid recyclingrate region year nyc, vce(placebo) reps(100) seed(123) covariates(incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite) graph g1_opt(xtitle("") ylabel(0(0.05).4) xlabel(1995(1)2010, labsize(small)) scheme(plotplainblind)) g2_opt(xlabel(1995(1)2010, labsize(small)) ytitle("Packs per capita") xtitle("") graph_export([sdid_, .png] , type))
+sdid recyclingrate region i.year nyc, vce(placebo) reps(100) seed(123) covariates(incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite) graph g1_opt(xtitle("") ylabel(0(0.05).4) xlabel(1995(1)2010, labsize(small)) scheme(plotplainblind)) g2_opt(xlabel(1995(1)2010, labsize(small)) ytitle("Fraction of waste recycled") xtitle("") graph_export([sdid_, .png] , type))
 
 **********************************************************************************************************************************
 
