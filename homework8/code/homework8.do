@@ -63,20 +63,20 @@ preserve
 
 	xtreg recyclingrate nyc##treat i.year,fe vce(cluster regionid)
 
-restore
-**********************************************************************************************************************************
 
+**********************************************************************************************************************************
 
 
 /*---------------------      Question 3. -------------------------------
  Use the command sdid to estimate the synthetic DID version of the TWFE regression in equation 2. */
 
-/*sdid Y S T D [if] [in], vce(method) seed(#) reps(#) covariates(varlist [, method]) method(methodtype)
-                        unstandardized graph_export([stub] , type) mattitles
+/*sdid Y S T D [if] [in], vce(method) seed(#) reps(#) covariates(varlist [, method]) method(methodtype) unstandardized graph_export([stub] , type) mattitles
                         graph g1on g1_opt(string) g2_opt(string) msize() */
-
-sdid recyclingrate region i.year nyc, vce(placebo) reps(100) seed(123) covariates(incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite) graph g1_opt(xtitle("") ylabel(0(0.05).4) xlabel(1995(1)2010, labsize(small)) scheme(plotplainblind)) g2_opt(xlabel(1995(1)2010, labsize(small)) ytitle("Fraction of waste recycled") xtitle("") graph_export([sdid_, .png] , type))
-
+    gen interaction = nyc*treat
+	sdid recyclingrate regionid year interaction, vce(bootstrap) seed(1000) graph graph_export(sdid_graph, .pdf)
+	*graph export "sdid_graph.pdf", replace
+	
+restore
 **********************************************************************************************************************************
 
 
