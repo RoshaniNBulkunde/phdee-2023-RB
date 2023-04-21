@@ -76,18 +76,41 @@ preserve
 	sdid recyclingrate regionid year interaction, vce(bootstrap) seed(1000) graph graph_export(sdid_graph, .pdf)
 	*graph export "sdid_graph.pdf", replace
 	
+	**Import the table
+	eststo sdid: sdid recyclingrate regionid year interaction, vce(bootstrap) seed(100)
+
+	*create a table
+	esttab sdid using "q3_sdid.tex", replace starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f) 
+	
 restore
 **********************************************************************************************************************************
 
 
 /*---------------------      Question 4. -------------------------------*/
+gen l = year
+replace l = . if year == 2001
+
+gen post=year if year>=2002
+replace post=0 if year<2002
+
+gen treated = 0
+replace treated = 1 if year>=2002 & nyc==1
+lab var treated "Treated"
+
+encode region, generate(regionid) label(region)
 
 
+reg recyclingrate treated post nyc##i.l incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite 
 
+*---DID
+reghdfe recyclingrate treated post nyc##i.l incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite, absorb(regionid year)
+
+*----Set panel setting for dataset
+xtset regionid year
+xtreg recyclingrate nyc##treated i.year incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite,fe vce(cluster regionid)
 
 
 **********************************************************************************************************************************
-
 
 
 
