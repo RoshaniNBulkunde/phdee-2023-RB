@@ -87,40 +87,81 @@ restore
 
 
 /*---------------------      Question 4. -------------------------------*/
+
+** Year 2001 are not included in the analysis
 gen l = year
 replace l = . if year == 2001
 
-gen post=year if year>=2002
-replace post=0 if year<2002
 
 gen treated = 0
-replace treated = 1 if year>=2002 & nyc==1
+replace treated = 1 if l>=2002 & nyc==1
 lab var treated "Treated"
 
 encode region, generate(regionid) label(region)
 
+xtset regionid year
 
-reg recyclingrate treated post nyc##i.l incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite 
+*---Regression
+reg recyclingrate treated incomepercapita nonwhite i.regionid i.year, vce(cluster regionid)
+estimates store q4reg
+*coefplot, vertical keep (recyclingrate treated incomepercapita nonwhite)
 
 *---DID
-reghdfe recyclingrate treated post nyc##i.l incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite, absorb(regionid year)
+reghdfe recyclingrate treated incomepercapita nonwhite, absorb(regionid year) vce(cluster regionid)
+estimates store q4reghdfe
 
 *----Set panel setting for dataset
-xtset regionid year
-xtreg recyclingrate nyc##treated i.year incomepercapita collegedegree2000 democratvoteshare2000 democratvoteshare2004 nonwhite,fe vce(cluster regionid)
 
+xtreg recyclingrate treated i.year incomepercapita nonwhite,fe vce(cluster regionid)
+estimates store q4xtreg
 
+***Coefficient plots
+coefplot (q4reg \ q4reghdfe \ q4xtreg), vertical keep (recyclingrate treated incomepercapita nonwhite) aseq swapnames ///
+    coeflabels(q4reg = "reg" q4reghdfe = "reghdfe" q4xtreg = "xtreg") ytitle(Coefficient) title(Estimates)
+
+graph export "hw8_q4_coefplot.pdf", replace
+	
 **********************************************************************************************************************************
 
 
-
 /*---------------------      Question 5. -------------------------------
- Use the commands synth and synth_runner to generate synthetic control estimates of the dynamic treatment effects. Generate the synthetic control estimates using whichever matching variables you see as most appropriate. Use placebo inference. Report: */
+Use the commands synth and synth_runner to generate synthetic control estimates of the dynamic treatment effects. Generate the synthetic control estimates using whichever matching variables you see as most appropriate. Use placebo inference. Report: */
+
+/*                 Note: to install synth packages
+ssc install synth, all
+cap ado uninstall synth_runner //in-case already installed
+net install synth_runner, from(https://raw.github.com/bquistorff/synth_runner/master/) replace */
  
- 
+use "$hw8dir\recycling_hw.dta", clear
+
 *----------(a) The plot of raw outcomes for treated and control groups over time.
+encode region, gen(regionid)
+tsset regionid year
+
+replace regionid =  0 if nyc == 1 // Set NewYork regionid = 0
+
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year regionid)
+
+**Synth
+synth recyclingrate nonwhite incomepercapita munipop2000, trunit(0) trperiod(2002) figure keep(SynthData.dta) replace //trunit=0 (treatment unit)
+graph export "hw8_q5a_synth.pdf", replace
+
+**Synth_runner
+synth_runner recyclingrate nonwhite incomepercapita munipop2000, trunit(0) trperiod(2002) gen_vars
+save "SynthRunnerData.dta"
+
+
 *----------(b) The plot of raw outcomes for treated group and synthetic control group over time.
+effect_graphs, treated_name("NYC") tc_options(title("Synthetic Control") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(0.05,0.4)) ylabel(0.05(0.05)0.4) xtitle("Year") ytitle("Recycling Rate")) 
+
+*graph combine tc effect
+
+single_treatment_graphs, do_color(pink)
+graph export "hw8_q5raw.pdf", replace
+
 *----------(c) The plot of estimated synthetic control effects and placebo effects over time.
+
+
 *----------(d) The plot of final synthetic control estimates over time.
 
 
