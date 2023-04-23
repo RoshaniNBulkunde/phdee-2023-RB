@@ -63,7 +63,6 @@ preserve
 
 	xtreg recyclingrate nyc##treat i.year,fe vce(cluster regionid)
 
-
 **********************************************************************************************************************************
 
 
@@ -148,19 +147,201 @@ graph export "hw8_q5a_synth.pdf", replace
 
 **Synth_runner
 synth_runner recyclingrate nonwhite incomepercapita munipop2000, trunit(0) trperiod(2002) gen_vars
-save "SynthRunnerData.dta"
+save "SynthRunnerData.dta", replace
 
 
 *----------(b) The plot of raw outcomes for treated group and synthetic control group over time.
 effect_graphs, treated_name("NYC") tc_options(title("Synthetic Control") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(0.05,0.4)) ylabel(0.05(0.05)0.4) xtitle("Year") ytitle("Recycling Rate")) 
 
-*graph combine tc effect
+graph combine tc effect
+graph export "5b_combine_effecttc.pdf", replace
 
-single_treatment_graphs, do_color(pink)
+*--
+single_treatment_graphs, do_color(green)
+graph combine raw effects
 graph export "hw8_q5raw.pdf", replace
 
-*----------(c) The plot of estimated synthetic control effects and placebo effects over time.
 
+
+*----------(c) The plot of estimated synthetic control effects and placebo effects over time.
+use "$hw8dir\recycling_hw.dta", clear
+
+encode region, gen(regionid)
+tsset regionid year
+
+replace regionid =  0 if nyc == 1
+
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year region_dummy)
+
+tempname resmat
+        forvalues i = 0/26 {
+        quietly synth recyclingrate nonwhite incomepercapita munipop2000, trunit(`i') trperiod(2002) keep(synth_`i', replace)
+        matrix `resmat' = nullmat(`resmat') \ e(RMSPE)
+        local names `"`names' `"`i'"'"'
+		
+
+        }
+        mat colnames `resmat' = "RMSPE"
+        mat rownames `resmat' = `names'
+        matlist `resmat' , row("Treated Unit")
+		
+forval i=0/26 {
+
+	use synth_`i', clear
+
+	rename _time years
+
+	gen tr_effect_`i' = _Y_treated - _Y_synthetic
+
+	keep years tr_effect_`i'
+
+	drop if missing(years)
+
+	save synth_`i', replace
+}
+
+use synth_0, clear
+
+forval i=1/26 {
+
+	qui merge 1:1 years using synth_`i', nogenerate
+}
+
+save synth_0.dta, replace
+
+////
+
+clear all
+use "C:\Users\16789\OneDrive\Desktop\2023\Environmental Econ II\GitHub\phdee-2023-vg\homework8\recycling_hw.dta"
+
+encode region, gen(region_dummy)
+tsset region_dummy year
+
+replace region_dummy =  0 if nyc == 1
+
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year region_dummy)
+
+tempname resmat
+        forvalues i = 29/124 {
+        quietly synth recyclingrate nonwhite incomepercapita munipop2000, trunit(`i') trperiod(2002) keep(synth_`i', replace)
+        matrix `resmat' = nullmat(`resmat') \ e(RMSPE)
+        local names `"`names' `"`i'"'"'
+		
+
+        }
+        mat colnames `resmat' = "RMSPE"
+        mat rownames `resmat' = `names'
+        matlist `resmat' , row("Treated Unit")
+		
+forval i=29/124 {
+
+	use synth_`i', clear
+
+	rename _time years
+
+	gen tr_effect_`i' = _Y_treated - _Y_synthetic
+
+	keep years tr_effect_`i'
+
+	drop if missing(years)
+
+	save synth_`i', replace
+}
+
+use synth_0, clear
+
+forval i=29/124 {
+
+	qui merge 1:1 years using synth_`i', nogenerate
+}
+
+save synth_0.dta, replace
+
+////
+
+clear all
+use "C:\Users\16789\OneDrive\Desktop\2023\Environmental Econ II\GitHub\phdee-2023-vg\homework8\recycling_hw.dta"
+
+encode region, gen(region_dummy)
+tsset region_dummy year
+
+replace region_dummy =  0 if nyc == 1
+
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year region_dummy)
+
+tempname resmat
+        forvalues i = 126/210 {
+        quietly synth recyclingrate nonwhite incomepercapita munipop2000, trunit(`i') trperiod(2002) keep(synth_`i', replace)
+        matrix `resmat' = nullmat(`resmat') \ e(RMSPE)
+        local names `"`names' `"`i'"'"'
+		
+        }
+		
+forval i=126/210 {
+
+	use synth_`i', clear
+
+	rename _time years
+
+	gen tr_effect_`i' = _Y_treated - _Y_synthetic
+
+	keep years tr_effect_`i'
+
+	drop if missing(years)
+
+	save synth_`i', replace
+}
+
+use synth_0, clear
+
+forval i=126/210 {
+
+	qui merge 1:1 years using synth_`i', nogenerate
+}
+
+save synth_0.dta, replace
+
+///////
+
+
+/// rename
+forval i = 0/26 {
+   rename tr_effect_`i' tr_`i'
+}
+
+forval i = 29/124 {
+	
+	local j = `i'-2
+   rename tr_effect_`i' tr_`j'
+}
+
+forval i = 126/210 {
+	
+	local j = `i'-3
+   rename tr_effect_`i' tr_`j'
+}
+
+
+// plot
+local lp
+
+forval i = 0/207 {
+   local lp `lp' line tr_`i' years, lcolor(gs12) ||
+}
+
+*
+
+* create plot
+
+twoway line tr_1-tr_99 years|| line tr_0 years, lcolor(orange) legend(off) xline(2002, lpattern(dash))
+
+graph twoway line tr_0 years, addplot(twoway tr_1 years)
+
+//////////
+
+reshape long tr_, i(year) j(effect)
+
+use synth_0.dta, replace
 
 *----------(d) The plot of final synthetic control estimates over time.
 
