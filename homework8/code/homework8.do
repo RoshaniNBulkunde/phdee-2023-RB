@@ -165,22 +165,21 @@ graph export "hw8_q5raw.pdf", replace
 
 *----------(c) The plot of estimated synthetic control effects and placebo effects over time.
 use "$hw8dir\recycling_hw.dta", clear
+cd "$hw8dir\output\synth"
 
 encode region, gen(regionid)
 tsset regionid year
 
 replace regionid =  0 if nyc == 1
 
-collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year region_dummy)
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year regionid)
 
 tempname resmat
         forvalues i = 0/26 {
         quietly synth recyclingrate nonwhite incomepercapita munipop2000, trunit(`i') trperiod(2002) keep(synth_`i', replace)
         matrix `resmat' = nullmat(`resmat') \ e(RMSPE)
         local names `"`names' `"`i'"'"'
-		
-
-        }
+		}
         mat colnames `resmat' = "RMSPE"
         mat rownames `resmat' = `names'
         matlist `resmat' , row("Treated Unit")
@@ -188,38 +187,30 @@ tempname resmat
 forval i=0/26 {
 
 	use synth_`i', clear
-
 	rename _time years
-
 	gen tr_effect_`i' = _Y_treated - _Y_synthetic
-
 	keep years tr_effect_`i'
-
 	drop if missing(years)
-
 	save synth_`i', replace
 }
 
 use synth_0, clear
 
 forval i=1/26 {
-
 	qui merge 1:1 years using synth_`i', nogenerate
 }
 
 save synth_0.dta, replace
 
-////
+*--------
+use "$hw8dir\recycling_hw.dta", clear
 
-clear all
-use "C:\Users\16789\OneDrive\Desktop\2023\Environmental Econ II\GitHub\phdee-2023-vg\homework8\recycling_hw.dta"
+encode region, gen(regionid)
+tsset regionid year
 
-encode region, gen(region_dummy)
-tsset region_dummy year
+replace regionid =  0 if nyc == 1
 
-replace region_dummy =  0 if nyc == 1
-
-collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year region_dummy)
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year regionid)
 
 tempname resmat
         forvalues i = 29/124 {
@@ -227,7 +218,6 @@ tempname resmat
         matrix `resmat' = nullmat(`resmat') \ e(RMSPE)
         local names `"`names' `"`i'"'"'
 		
-
         }
         mat colnames `resmat' = "RMSPE"
         mat rownames `resmat' = `names'
@@ -236,15 +226,10 @@ tempname resmat
 forval i=29/124 {
 
 	use synth_`i', clear
-
 	rename _time years
-
 	gen tr_effect_`i' = _Y_treated - _Y_synthetic
-
 	keep years tr_effect_`i'
-
 	drop if missing(years)
-
 	save synth_`i', replace
 }
 
@@ -257,17 +242,15 @@ forval i=29/124 {
 
 save synth_0.dta, replace
 
-////
+*--------
+use "$hw8dir\recycling_hw.dta", clear
 
-clear all
-use "C:\Users\16789\OneDrive\Desktop\2023\Environmental Econ II\GitHub\phdee-2023-vg\homework8\recycling_hw.dta"
+encode region, gen(regionid)
+tsset regionid year
 
-encode region, gen(region_dummy)
-tsset region_dummy year
+replace regionid =  0 if nyc == 1
 
-replace region_dummy =  0 if nyc == 1
-
-collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year region_dummy)
+collapse nyc nj ma recyclingrate id fips collegedegree2000 incomepercapita munipop2000 democratvoteshare2000 democratvoteshare2004 nonwhite, by(year regionid)
 
 tempname resmat
         forvalues i = 126/210 {
@@ -280,15 +263,10 @@ tempname resmat
 forval i=126/210 {
 
 	use synth_`i', clear
-
 	rename _time years
-
 	gen tr_effect_`i' = _Y_treated - _Y_synthetic
-
 	keep years tr_effect_`i'
-
 	drop if missing(years)
-
 	save synth_`i', replace
 }
 
@@ -301,10 +279,10 @@ forval i=126/210 {
 
 save synth_0.dta, replace
 
-///////
+*****************************
 
 
-/// rename
+*---------- rename
 forval i = 0/26 {
    rename tr_effect_`i' tr_`i'
 }
@@ -329,19 +307,11 @@ forval i = 0/207 {
    local lp `lp' line tr_`i' years, lcolor(gs12) ||
 }
 
-*
-
-* create plot
-
+*-----create plot
 twoway line tr_1-tr_99 years|| line tr_0 years, lcolor(orange) legend(off) xline(2002, lpattern(dash))
 
-graph twoway line tr_0 years, addplot(twoway tr_1 years)
+graph export "$hw8dir\output\hw8_q5c.pdf", replace
 
-//////////
-
-reshape long tr_, i(year) j(effect)
-
-use synth_0.dta, replace
 
 *----------(d) The plot of final synthetic control estimates over time.
 
