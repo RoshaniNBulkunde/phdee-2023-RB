@@ -165,6 +165,13 @@ graph export "hw8_q5raw.pdf", replace
 
 *----------(c) The plot of estimated synthetic control effects and placebo effects over time.
 use "$hw8dir\recycling_hw.dta", clear
+
+
+
+
+
+
+/*
 cd "$hw8dir\output\synth"
 
 encode region, gen(regionid)
@@ -312,6 +319,7 @@ twoway line tr_1-tr_99 years|| line tr_0 years, lcolor(orange) legend(off) xline
 
 graph export "$hw8dir\output\hw8_q5c.pdf", replace
 
+*/
 
 *----------(d) The plot of final synthetic control estimates over time.
 
