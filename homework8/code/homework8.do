@@ -151,23 +151,29 @@ save "SynthRunnerData.dta", replace
 
 
 *----------(b) The plot of raw outcomes for treated group and synthetic control group over time.
-effect_graphs, treated_name("NYC") tc_options(title("Synthetic Control") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(0.05,0.4)) ylabel(0.05(0.05)0.4) xtitle("Year") ytitle("Recycling Rate")) 
+effect_graphs, treated_name("NYC") tc_options(title("Synthetic Control and Treatment Group") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(0.05,0.4)) ylabel(0.05(0.05)0.4) xtitle("Year") ytitle("Recycling Rate")) effect_options(title("Synthetic Control Estimates") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(-0.23,-0.13)) ylabel(-0.23(0.01)-0.13) xtitle("Year") ytitle("Change in Recycling Rate")) 
 
-graph combine tc effect
-graph export "5b_combine_effecttc.pdf", replace
+graph export "Q5b_synth.pdf", replace
 
-*--
-single_treatment_graphs, do_color(green)
-graph combine raw effects
-graph export "hw8_q5raw.pdf", replace
+graph export "Q5d_synth.pdf", as(pdf) name("effect") replace
+
+*-----------------------------------
+single_treatment_graphs, do_color(green) treated_name("NYC") donors_name("All Other Regions") raw_options(title("Raw Outcomes") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(0.05,0.85)) ylabel(0.05(0.05)0.85) xtitle("Year") ytitle("Recycling Rate")) effects_options(title("Raw Effects") xsc(r(1997,2008)) xlabel(1997(1)2008) ysc(r(-0.35,0.45)) ylabel(-0.35(0.05)0.45) xtitle("Year") ytitle("Change in Recycling Rate"))
+
+graph export "Q5a_synth.pdf", as(pdf) name("raw") replace
 
 
+*-----------
+pval_graphs, pvals_options(title("Placebo Effects") xsc(r(0,7)) xlabel(0(1)7) ysc(r(0,0.3)) ylabel(0(0.05)0.3))
+
+graph export "Q5c_synth.pdf", as(pdf) name("pvals") replace
 
 *----------(c) The plot of estimated synthetic control effects and placebo effects over time.
-use "$hw8dir\recycling_hw.dta", clear
 
 
 
+
+*----------(d) The plot of final synthetic control estimates over time.
 
 
 
@@ -321,7 +327,6 @@ graph export "$hw8dir\output\hw8_q5c.pdf", replace
 
 */
 
-*----------(d) The plot of final synthetic control estimates over time.
 
 
 *----------(e) Hints: Note that all of these plots can be generated using postestimation commands that come with synth_runner. You will need to collapse all of New York City to one treated unit to usethe canned commands. Finally, remember that these estimates
